@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Sample.Messages";
+package Sample.GrpcService;
+
+
+message Response1{
+   string Message = 1;
+}

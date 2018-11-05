@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Sample.Services";
+package Sample.GrpcService;
+import "Request1.proto";
+import "Response1.proto";
+
+service Service1{
+    rpc API1(Request1) returns (Response1){}
+
+	rpc API2(Request1) returns (Response1){}
+}
