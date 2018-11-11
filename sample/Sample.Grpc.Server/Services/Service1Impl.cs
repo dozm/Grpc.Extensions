@@ -11,18 +11,13 @@ using static Sample.Services.Service1;
 
 namespace Sample.Grpc.Server.Services
 {
-    public class Service1Impl : Service1Base, IGrpcSerivce
+    public class Service1Impl : Service1Base
     {
         private readonly ILogger<Service1Impl> _logger;
 
         public Service1Impl(ILogger<Service1Impl> logger)
         {
             _logger = logger;
-        }
-        public ServerServiceDefinition BuildServiceDefinition()
-        {
-
-            return Service1.BindService(this);
         }
 
         public override async Task<Response1> API1(Request1 request, ServerCallContext context)

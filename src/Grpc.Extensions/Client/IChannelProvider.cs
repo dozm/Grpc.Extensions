@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Grpc.Extensions.Client
 {
-    public interface IChannelPool
+    public interface IChannelProvider
     {
-        Channel Rent();
-
+        Channel GetChannel(string serviceName);
+        Channel GetChannel(Type clientType);
     }
 }

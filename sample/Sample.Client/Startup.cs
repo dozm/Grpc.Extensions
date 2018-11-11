@@ -4,7 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Sample.Grpc.Server;
-using Grpc.Extensions.Consul.ServerSide;
+using Microsoft.Extensions.Logging;
+using Grpc.Core.Interceptors;
+using static Sample.Services.Service1;
+using static Sample.Services.Service2;
+using Grpc.Extensions.Client;
+using Sample.Client.Interceptors;
 
 namespace Sample.Host
 {
@@ -19,10 +24,13 @@ namespace Sample.Host
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpcServer()
-                .UseConsulServiceRegister()
 
-                ;
+            services.AddHostedService<Hosted>()
+            .AddSingleton<Interceptor, AccessInterceptor>()
+            .AddGrpcClient<Service1Client>()
+            .AddGrpcClient<Service2Client>()
+            .UseGrpcClientExtensions()
+            ;
 
         }
     }

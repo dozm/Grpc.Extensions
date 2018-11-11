@@ -8,7 +8,7 @@ namespace Grpc.Extensions.Consul
         public static ServerBuilder UseConsul(this ServerBuilder builder)
         {
 
-
+            
             return builder;
         }
     }

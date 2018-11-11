@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Grpc.Extensions.Consul\Grpc.Extensions.Consul.csproj" />
     <ProjectReference Include="..\Sample.Grpc.Server\Sample.Grpc.Server.csproj" />
   </ItemGroup>
 

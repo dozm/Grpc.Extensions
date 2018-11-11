@@ -19,9 +19,11 @@ namespace Grpc.Extensions
         }
         public void Configure(GrpcServerOptions options)
         {
-            var grpcServiceConfig = _config.GetSection("GrpcServerOptions");
+            var grpcServerConfig = _config.GetSection("GrpcServerOptions");
+            if (grpcServerConfig == null)
+                return;
 
-            var serverPosts = grpcServiceConfig.GetSection("ServerPorts").Get<List<ServerPortConfig>>();
+            var serverPosts = grpcServerConfig.GetSection("ServerPorts").Get<List<ServerPortConfig>>();
 
             serverPosts?.ForEach(c => options.AddPort(c.Host ?? "[::]", c.Port ?? ServerPort.PickUnused, CreateCredentials(c.Credentials)));
 

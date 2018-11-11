@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Grpc.Extensions.Client
 {
-    public class PoolableCallInvoker : CallInvoker
+    public class StatelessCallInvoker : CallInvoker
     {
-        private readonly IChannelPool _channelPool;
+        private readonly IChannelProvider _channelProvider;
 
-        public PoolableCallInvoker(IChannelPool channelPool)
+        public StatelessCallInvoker(IChannelProvider channelProvider)
         {
-            _channelPool = channelPool;
+            _channelProvider = channelProvider;
         }
 
 
@@ -69,7 +69,7 @@ namespace Grpc.Extensions.Client
                 where TRequest : class
                 where TResponse : class
         {
-            return new CallInvocationDetails<TRequest, TResponse>(_channelPool.Rent(), method, host, options);
+            return new CallInvocationDetails<TRequest, TResponse>(_channelProvider.GetChannel(method.ServiceName), method, host, options);
         }
     }
 }

@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Grpc.Extensions
 {
-    public interface IGrpcSerivce
+    public interface IServiceDefinitionFactory
     {
-        ServerServiceDefinition BuildServiceDefinition();
+        ServerServiceDefinition Create();
     }
 }

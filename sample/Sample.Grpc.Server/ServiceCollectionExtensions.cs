@@ -14,13 +14,12 @@ namespace Sample.Grpc.Server
     {
         public static IServiceCollection AddGrpcServer(this IServiceCollection services)
         {
-            services.AddTransient<IGrpcSerivce, Service1Impl>()
-                .AddTransient<IGrpcSerivce, Service2Impl>()
+            services.AddGrpcService<Service1Impl>()
+                .AddGrpcService<Service2Impl>()
                 .AddSingleton<Interceptor, AccessInterceptor>()
                 //.AddHostedService<Hosted>()
                 .UseGrpcServer(options =>
                 {
-                    options.AddPort(9001);
                   
                 })
                 ;

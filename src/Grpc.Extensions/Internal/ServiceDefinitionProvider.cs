@@ -8,16 +8,16 @@ namespace Grpc.Extensions.Internal
 {
     internal class ServiceDefinitionProvider : IServiceDefinitionProvider
     {
-        private readonly IEnumerable<IGrpcSerivce> _grpcServices;
+        private readonly IEnumerable<IServiceDefinitionFactory> _factories;
 
-        public ServiceDefinitionProvider(IEnumerable<IGrpcSerivce> grpcServices)
+        public ServiceDefinitionProvider(IEnumerable<IServiceDefinitionFactory> factories)
         {
-            _grpcServices = grpcServices;
+            _factories = factories;
         }
         public IEnumerable<ServerServiceDefinition> GetServiceDefinitions()
         {
 
-            return _grpcServices.Select(s => s.BuildServiceDefinition());
+            return _factories.Select(f => f.Create());
         }
     }
 }
