@@ -19,9 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Grpc", "sample\Sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Grpc.Server", "sample\Sample.Grpc.Server\Sample.Grpc.Server.csproj", "{F44145AE-F731-4AE3-9F80-D161D7EE0406}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Host", "sample\Sample.Host\Sample.Host.csproj", "{9466B4C2-0926-4FD6-92A8-FC8A9E2ED496}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Host", "sample\Sample.Host\Sample.Host.csproj", "{9466B4C2-0926-4FD6-92A8-FC8A9E2ED496}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Client", "sample\Sample.Client\Sample.Client.csproj", "{AB5BA17D-2791-4755-8053-34B0B83F7B65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Client", "sample\Sample.Client\Sample.Client.csproj", "{AB5BA17D-2791-4755-8053-34B0B83F7B65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -15,7 +15,7 @@ namespace Grpc.Extensions.Client
     {
         private readonly GrpcClientOptions _options;
         private readonly ILoggerFactory _loggerFactory;
-        private ConcurrentDictionary<string, IChannelPool> _channelPools = new ConcurrentDictionary<string, IChannelPool>();
+        private ConcurrentDictionary<string, ILoadBalancer> _channelPools = new ConcurrentDictionary<string, ILoadBalancer>();
 
         public ChannelProvider(IOptions<GrpcClientOptions> options, ILoggerFactory loggerFactory)
         {
@@ -29,7 +29,7 @@ namespace Grpc.Extensions.Client
                 throw new ArgumentException($"Parameter {nameof(serviceName)} cannot be null.");
 
             var channelPool = _channelPools.GetOrAdd(serviceName, CreateChannelPool);
-            var channel = channelPool.Rent();
+            var channel = channelPool.GetChannel();
 
             return channel;
         }
@@ -39,11 +39,9 @@ namespace Grpc.Extensions.Client
             var serviceName = _options.Clients.FirstOrDefault(cm => cm.ClientType == clientType)?.ServiceName;
 
             return GetChannel(serviceName);
-        }
+        }        
 
-
-
-        private IChannelPool CreateChannelPool(string serviceName)
+        private ILoadBalancer CreateChannelPool(string serviceName)
         {
             if (!_options.ServicesEndpoint.TryGetValue(serviceName, out var serviceEndpoint))
             {

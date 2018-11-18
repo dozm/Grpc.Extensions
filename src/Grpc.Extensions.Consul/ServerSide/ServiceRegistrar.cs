@@ -8,19 +8,24 @@ using System.Threading.Tasks;
 using System.Linq;
 using Grpc.Extensions.ExecutionStrategies;
 using Microsoft.Extensions.Hosting;
+using System.Net.Http;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Grpc.Extensions.Consul.ServerSide
 {
-    public class ServiceRegistrar : IHostedService //IGrpcServerLifetime
+    public class ServiceRegistrar : IHostedService
     {
-        private bool _registerSuccessfully;
+        private Timer _ttlTimer;
+        private AgentServiceRegistration _serviceRegistration;
+        private ServiceEntry _serviceRegistered;
+
         private readonly IConsulClientFactory _consulClientFactory;
         private readonly IAgentServiceRegistrationFactory _registrationFactory;
         private readonly IExecutionStrategyFactory _executionStrategyFactory;
         private readonly ConsulOptions _options;
         private readonly ILogger<ServiceRegistrar> _logger;
         private readonly IGrpcServerContextAccessor _grpcServerContextAccessor;
-        private AgentServiceRegistration _serviceRegistration;
 
         private GrpcServerContext Context => _grpcServerContextAccessor.Context;
 
@@ -37,38 +42,41 @@ namespace Grpc.Extensions.Consul.ServerSide
             _options = options.Value;
             _logger = logger;
             _grpcServerContextAccessor = grpcServerContextAccessor;
-        }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-
-            // TODO: 是否需要注册所有已监听的端口。
-            _serviceRegistration = _registrationFactory.Create(Context);
-
-            //_registerSuccessfully = await RetryingRegisterServiceAsync(_registration, cancellationToken);
-
-            //if (_registerSuccessfully)
-            {
-                TryStartTTL();
-            }
 
         }
 
-        private async Task<bool> RetryingRegisterServiceAsync(AgentServiceRegistration registration, CancellationToken cancellationToken)
+        public virtual async Task StartAsync(CancellationToken cancellationToken)
         {
-            return await _executionStrategyFactory.Create().ExecuteAsync(registration, RegisterAsync, cancellationToken);
+            // 非阻塞启动
+            var registerServiceTask = StartRegisterAsync(cancellationToken);
+
+            await Task.CompletedTask;
         }
 
-        private async Task<bool> RegisterAsync(AgentServiceRegistration registration, CancellationToken cancellationToken)
+        protected virtual async Task StartRegisterAsync(CancellationToken cancellationToken = default)
         {
+            _serviceRegistration = _registrationFactory.Create();
+            _serviceRegistered = await RegisterAsync(_serviceRegistration, cancellationToken);
 
+            TryStartTTL(_serviceRegistered, _serviceRegistration);
+        }
+
+        protected virtual async Task<ServiceEntry> RegisterAsync(AgentServiceRegistration serviceReg, CancellationToken cancellationToken = default)
+        {
+            return await _executionStrategyFactory.Create().ExecuteAsync(serviceReg, RegisterImplementAsync, cancellationToken);
+        }
+
+        protected virtual async Task<ServiceEntry> RegisterImplementAsync(AgentServiceRegistration serviceReg, CancellationToken cancellationToken = default)
+        {
             var consul = _consulClientFactory.Create();
             try
             {
-                _logger.LogInformation($"正在向 Consul 注册服务:{registration.ID}");
-                await consul.Agent.ServiceRegister(registration, cancellationToken);
-                _logger.LogInformation($"已将服务注册到 Consul:{registration.ID}");
-                return true;
+                _logger.LogInformation($"正在向 Consul 注册服务:{serviceReg.ID}");
+                await consul.Agent.ServiceRegister(serviceReg, cancellationToken);
+                var serviceRegistered = (await consul.Health.Service(serviceReg.Name)).Response.FirstOrDefault(s => s.Service.ID == serviceReg.ID);
+                _logger.LogInformation($"已将服务注册到 Consul:{serviceReg.ID}");
+
+                return serviceRegistered;
             }
             finally
             {
@@ -76,30 +84,50 @@ namespace Grpc.Extensions.Consul.ServerSide
             }
         }
 
-        private void TryStartTTL()
+        protected virtual void TryStartTTL(ServiceEntry serviceRegistered, AgentServiceRegistration serviceRegistration)
         {
-            // TODO: 支持多个 TTL chek
-            var ttlCheck = FindTTLCheck(_serviceRegistration);
+            var ttlCheck = FindTTLCheck(serviceRegistration);
+
             if (ttlCheck != null)
             {
-                var ttlTimer = new Timer(async _ => await PassTTL(ttlCheck), null, 0, 10000);
+                var service = serviceRegistered.Service;
+                var ttlCheckId = _serviceRegistered.Checks.FirstOrDefault(c => c.Name == ttlCheck.Name)?.CheckID;
 
-                var ttlTask = PassTTL(ttlCheck);
+                _ttlTimer = new Timer(async _ => await PassTTL(ttlCheckId, service.ID, service.Service), null, 0, (int)ttlCheck.TTL.Value.TotalMilliseconds);
             }
-
         }
 
-        private async Task PassTTL(AgentCheckRegistration ttlCheck, CancellationToken cancellationToken = default)
+        protected virtual async Task PassTTL(string ttlCheckId, string serviceId, string serviceName, CancellationToken cancellationToken = default)
         {
             var consul = _consulClientFactory.Create();
+
             try
             {
-                //await client.Agent.PassTTL(ttlCheck.ID, $"Time:{DateTime.Now}", cancellationToken);
-                _logger.LogDebug($"pass ttl {ttlCheck.ID}");
+                var note = $"TTL passing:{DateTime.Now}";
+                await consul.Agent.PassTTL(ttlCheckId, note, cancellationToken).ConfigureAwait(false);
+                _logger.LogDebug(note);
+            }
+            catch (ConsulRequestException ex)
+            {
+                _logger.LogError(ex, $"TTL 时发生异常，TTL check id:{ttlCheckId}");
+                switch (ex.StatusCode)
+                {
+                    case HttpStatusCode.InternalServerError:
+                        var queryResult = await consul.Health.Service(serviceName).ConfigureAwait(false);
+                        var service = queryResult.Response.FirstOrDefault(s => s.Service.ID == serviceId);
+                        if (service == null || service.Checks.FirstOrDefault(c => c.CheckID == ttlCheckId) == null)
+                        {
+                            _logger.LogInformation("开始尝试重新注册服务...");
+                            await ReRegisterAsync(_serviceRegistration);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex, $"TTL 时发生异常，TTL check id:{ttlCheckId}");
             }
             finally
             {
@@ -107,21 +135,49 @@ namespace Grpc.Extensions.Consul.ServerSide
             }
         }
 
-        private async Task DeregisterAsync(AgentServiceRegistration registration, CancellationToken cancellationToken = default)
+        protected virtual async Task ReRegisterAsync(AgentServiceRegistration registration, CancellationToken cancellationToken = default)
         {
-            //if (!_registerSuccessfully)
-            //    return;
-
-            using (var consul = _consulClientFactory.Create())
+            if (_ttlTimer != null)
             {
-                // 与服务关联的Check也将随之注销。
-                await consul.Agent.ServiceDeregister(registration.ID, cancellationToken);
+                _ttlTimer.Dispose();
+                _ttlTimer = null;
+            }
+            if (_serviceRegistered != null)
+            {
+                await DeregisterAsync(_serviceRegistered.Service.ID);
+                _serviceRegistered = null;
+            }
+            _serviceRegistered = await RegisterAsync(registration);
+            TryStartTTL(_serviceRegistered, registration);
+
+        }
+
+        protected virtual async Task DeregisterAsync(string serviceId, CancellationToken cancellationToken = default)
+        {
+            var consul = _consulClientFactory.Create();
+            try
+            {
+                _logger.LogInformation($"正在注销服务：{serviceId}");
+                await consul.Agent.ServiceDeregister(serviceId, cancellationToken);
+                _logger.LogInformation($"服务已注销：{serviceId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "从 Consul 注销服务时发生异常。");
+            }
+            finally
+            {
+                consul.Dispose();
             }
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public virtual async Task StopAsync(CancellationToken cancellationToken)
         {
-            await DeregisterAsync(_serviceRegistration, cancellationToken);
+            _ttlTimer?.Dispose();
+            if (_serviceRegistered != null)
+            {
+                await DeregisterAsync(_serviceRegistered.Service.ID, cancellationToken);
+            }
         }
 
         private static AgentCheckRegistration FindTTLCheck(AgentServiceRegistration registration)

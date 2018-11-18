@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Grpc.Extensions.Consul\Grpc.Extensions.Consul.csproj" />
     <ProjectReference Include="..\..\src\Grpc.Extensions\Grpc.Extensions.csproj" />
     <ProjectReference Include="..\Sample.Grpc\Sample.Grpc.csproj" />
   </ItemGroup>

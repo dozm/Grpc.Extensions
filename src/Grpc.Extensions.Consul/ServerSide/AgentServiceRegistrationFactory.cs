@@ -3,58 +3,102 @@ using Consul;
 using Grpc.Extensions.ServerSide;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using System.Net;
 
 namespace Grpc.Extensions.Consul.ServerSide
 {
     public class AgentServiceRegistrationFactory : IAgentServiceRegistrationFactory
     {
         private readonly ConsulOptions _options;
+        private readonly IGrpcServerContextAccessor _grpcServerContextAccessor;
+        private readonly IAgentCheckRegistrationProvider _checkRegistrationProvider;
 
-        public AgentServiceRegistrationFactory(IOptions<ConsulOptions> options)
+        public AgentServiceRegistrationFactory(IOptions<ConsulOptions> options, IGrpcServerContextAccessor grpcServerContextAccessor,
+            IAgentCheckRegistrationProvider checkRegistrationProvider)
         {
             _options = options.Value;
+            _grpcServerContextAccessor = grpcServerContextAccessor;
+            _checkRegistrationProvider = checkRegistrationProvider;
         }
 
-        public AgentServiceRegistration Create(GrpcServerContext context)
-        {
-            var defaultPort = context.GrpcServer.Ports.FirstOrDefault();
-            if (defaultPort == null)
-                throw new Exception($"未能创建默认的 Consul 服务注册，因为没有找到 Grpc Server 监听的端口。");
 
-            var address = defaultPort.Host;
-            var port = defaultPort.BoundPort;
+        public AgentServiceRegistration Create()
+        {
             var serviceRegistrationOptions = _options.ServiceRegistration;
 
-            var id = $"{serviceRegistrationOptions.ConsulServiceName}-{address}:{port}-{Guid.NewGuid()}";
+            var (host, port) = GetValidServiceEndpoint();
 
             var serviceRegistration = new AgentServiceRegistration()
             {
-                ID = id,
+                ID = CreateServiceId(serviceRegistrationOptions.ConsulServiceName, host, port),
                 Name = serviceRegistrationOptions.ConsulServiceName,
-                Address = address,
+                Address = host,
                 Port = port,
                 EnableTagOverride = serviceRegistrationOptions.EnableTagOverride,
-                Tags = new string[] { }
+                Tags = serviceRegistrationOptions.Tags
             };
 
-            serviceRegistration.Check = CreateCheck(serviceRegistration);
-
+            serviceRegistration.Checks = _checkRegistrationProvider.GetCheckRegistration(serviceRegistration);          
 
             return serviceRegistration;
         }
 
-        private AgentServiceCheck CreateCheck(AgentServiceRegistration serviceRegistration)
+        private (string host, int port) GetValidServiceEndpoint()
         {
-            return new AgentCheckRegistration
-            {
-                ID = $"{serviceRegistration.ID}:ttlcheck",
-                Name = "ttlcheck",
-                DeregisterCriticalServiceAfter = TimeSpan.FromMinutes(1),
-                TTL = TimeSpan.FromSeconds(15),
-                Status = HealthStatus.Passing,
-                ServiceID = serviceRegistration.ID
+            string host = _options.ServiceRegistration?.ServiceHost;
+            int port = _options.ServiceRegistration?.ServicePort ?? 0;
 
-            };
+            var endpoints = _grpcServerContextAccessor.Context.GrpcServer.Ports;
+
+            if (string.IsNullOrEmpty(host))
+            {
+                host = endpoints.FirstOrDefault()?.Host;
+            }
+
+            if (host == null)
+            {
+                throw new Exception("没有找到可用于注册到 Consul 的服务IP");
+            }
+
+            if (port == 0)
+            {
+                port = endpoints.FirstOrDefault(ed => ed.Host == host)?.BoundPort ?? (endpoints.FirstOrDefault()?.BoundPort ?? 0);
+            }
+
+            return (ParseIP(host), port);
+        }
+
+        private string CreateServiceId(string serviceName, string host, int port)
+        {
+            var endpoint = "";
+            if (IPAddress.TryParse(host, out var ip))
+                endpoint = new IPEndPoint(ip, port).ToString();
+            else
+                endpoint = $"{host}:{port}";
+
+            return $"{serviceName}-{endpoint}-{Guid.NewGuid().ToString("N")}";
+        }
+
+        private string ParseIP(string host)
+        {
+            var address = host.Trim(new char[] { '[', ']' });
+
+            if (!IPAddress.TryParse(address, out var ip))
+            {
+                return host;
+            }
+
+            if (ip.Equals(IPAddress.IPv6Any))
+            {
+                return "0:0:0:0:0:0:0:0";
+            }
+
+            if (ip.Equals(IPAddress.IPv6Loopback))
+            {
+                return "0:0:0:0:0:0:0:1";
+            }
+
+            return ip.ToString();
         }
     }
 }

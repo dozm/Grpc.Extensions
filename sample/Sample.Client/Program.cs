@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Sample.Host
 {
@@ -11,6 +12,8 @@ namespace Sample.Host
     {
         public static void Main(string[] args)
         {
+          
+
             using (var host = BuildHost(args))
             {
                 host.Run();

@@ -8,6 +8,6 @@ namespace Grpc.Extensions.Consul.ServerSide
 {
     public interface IAgentServiceRegistrationFactory
     {
-        AgentServiceRegistration Create(GrpcServerContext context);
+        AgentServiceRegistration Create();
     }
 }

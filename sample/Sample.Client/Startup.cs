@@ -10,6 +10,7 @@ using static Sample.Services.Service1;
 using static Sample.Services.Service2;
 using Grpc.Extensions.Client;
 using Sample.Client.Interceptors;
+using Grpc.Extensions.Consul.ClientSide;
 
 namespace Sample.Host
 {
@@ -24,14 +25,18 @@ namespace Sample.Host
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddHostedService<Hosted>()
             .AddSingleton<Interceptor, AccessInterceptor>()
             .AddGrpcClient<Service1Client>()
             .AddGrpcClient<Service2Client>()
             .UseGrpcClientExtensions()
+            .UseConsulServiceDiscovery()
+            .Configure<ConsulClientOptions>(options =>
+            {
+                options.ServiceMap[typeof(Service1Client)] = "testsvc";
+                options.ServiceMap[typeof(Service2Client)] = "testsvc";
+            })
             ;
-
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Grpc.Extensions.Internal
         private readonly IEnumerable<IGrpcServerLifetime> _lifetimes;
         private readonly IGrpcServerContextAccessor _contextAccessor;
         private Server _server;
+
         public HostedGrpcServer(
             IServiceDefinitionProvider serviceDefinitionProviders,
             IInterceptorProvider interceptorProvider,
@@ -72,9 +73,20 @@ namespace Grpc.Extensions.Internal
                .UseInterceptor(_interceptorProvider.GetInterceptors());
 
             if (_options == null)
+            {
+                builder.AutoPort();
                 return builder.Build();
+            }
 
-            _options.ServerPorts?.ForEach(p => builder.AddPort(p));
+            if(_options.ServerPorts?.Count < 1)
+            {
+                builder.AutoPort();
+            }
+            else
+            {
+                _options.ServerPorts.ForEach(p => builder.AddPort(p));
+            }
+           
             _options.ChannelOptions?.ForEach(o => builder.AddChannelOption(o));
 
             return builder.Build();

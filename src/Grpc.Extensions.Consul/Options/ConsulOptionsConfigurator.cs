@@ -8,7 +8,6 @@ namespace Grpc.Extensions.Consul.Options
 {
     public class ConsulOptionsConfigurator : IConfigureOptions<ConsulOptions>
     {
-
         private readonly IConfiguration _config;
 
         public ConsulOptionsConfigurator(IConfiguration config)
@@ -35,7 +34,7 @@ namespace Grpc.Extensions.Consul.Options
             if (conifg == null)
                 return;
 
-            if(options.ServiceRegistration == null)
+            if (options.ServiceRegistration == null)
             {
                 options.ServiceRegistration = new ServiceRegistrationOptions();
             }
@@ -46,9 +45,10 @@ namespace Grpc.Extensions.Consul.Options
             if (consulServiceName != null)
                 sro.ConsulServiceName = consulServiceName;
 
-            var enableTagOverride = conifg.GetSection("EnableTagOverride");
-            if (enableTagOverride != null)
-                sro.EnableTagOverride = enableTagOverride.Get<bool>();
+            sro.EnableTagOverride = conifg.GetValue<bool?>("EnableTagOverride") ?? true;
+
         }
+
+    
     }
 }

@@ -10,5 +10,7 @@ namespace Grpc.Extensions.Consul
         public string Address { get; set; }
 
         public ServiceRegistrationOptions ServiceRegistration { get; set; }
+
+
     }
 }

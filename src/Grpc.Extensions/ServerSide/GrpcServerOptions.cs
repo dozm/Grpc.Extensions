@@ -12,7 +12,6 @@ namespace Grpc.Extensions
 
         public List<ChannelOption> ChannelOptions { get; set; } = new List<ChannelOption>();
 
-        public List<object> ServicesType { get; set; } = new List<object>();
 
     }
 }

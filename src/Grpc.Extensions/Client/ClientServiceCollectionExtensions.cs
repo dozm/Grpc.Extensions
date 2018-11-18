@@ -25,21 +25,31 @@ namespace Grpc.Extensions.Client
         }
 
         public static IServiceCollection AddGrpcClient<TClient>(this IServiceCollection services)
-            where TClient : class
+            where TClient : ClientBase
         {
-            return services.AddGrpcClient(typeof(TClient));
-        }
 
-        public static IServiceCollection AddGrpcClient(this IServiceCollection services, Type clientType)
-        {
-            services.AddTransient(clientType);
+            services.AddTransient<TClient>();
 
             services.Configure<GrpcClientOptions>(options =>
             {
-                options.Clients.Add(new ClientMetadata(clientType));
+                options.Clients.Add(new ClientMetadata(typeof(TClient)));
             });
 
             return services;
         }
+
+        //public static IServiceCollection AddGrpcClient(this IServiceCollection services, Type clientType)
+        //{
+        //    services.AddTransient()
+
+        //    services.AddTransient(clientType);
+
+        //    services.Configure<GrpcClientOptions>(options =>
+        //    {
+        //        options.Clients.Add(new ClientMetadata(clientType));
+        //    });
+
+        //    return services;
+        //}
     }
 }

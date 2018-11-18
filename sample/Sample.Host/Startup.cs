@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Sample.Grpc.Server;
 using Grpc.Extensions.Consul.ServerSide;
+using Grpc.Extensions;
 
 namespace Sample.Host
 {
@@ -19,11 +20,10 @@ namespace Sample.Host
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpcServer()
-                .UseConsulServiceRegister()
+            services
+                .AddGrpcServer()
 
                 ;
-
         }
     }
 }

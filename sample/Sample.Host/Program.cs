@@ -36,7 +36,7 @@ namespace Sample.Host
                 })
                 .ConfigureServices((ctx, services) =>
                 {
-                    services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(ctx.Configuration.GetValue<int?>("HostShutdownTimeout", null) ?? 10));
+                    services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(ctx.Configuration.GetValue<int?>("HostShutdownTimeout", null) ?? 20));
 
                     var startup = new Startup(ctx);
                     startup.ConfigureServices(services);

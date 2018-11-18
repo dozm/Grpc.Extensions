@@ -15,7 +15,27 @@ namespace Grpc.Extensions.Consul.ServerSide
             services.AddHostedService<ServiceRegistrar>();
             services.TryAddTransient<IConsulClientFactory, ConsulClientFactory>();
             services.AddTransient<IAgentServiceRegistrationFactory, AgentServiceRegistrationFactory>();
+          
 
+            return services;
+        }
+
+        public static IServiceCollection UseGrpcCheck(this IServiceCollection services)
+        {
+            services.UseHealthService();
+            services.AddTransient<IAgentCheckRegistrationProvider, GrpcCheckRegistrationProvider>();
+            return services;
+        }
+
+        public static IServiceCollection UseTtlCheck(this IServiceCollection services)
+        {
+            services.AddTransient<IAgentCheckRegistrationProvider, TtlCheckRegistrationProvider>();
+            return services;
+        }
+
+        public static IServiceCollection UseTcpCheck(this IServiceCollection services)
+        {
+            services.AddTransient<IAgentCheckRegistrationProvider, TcpCheckRegistrationProvider>();
             return services;
         }
     }

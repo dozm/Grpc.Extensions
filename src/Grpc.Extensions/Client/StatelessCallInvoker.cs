@@ -14,7 +14,6 @@ namespace Grpc.Extensions.Client
             _channelProvider = channelProvider;
         }
 
-
         /// <summary>
         /// Invokes a simple remote call in a blocking fashion.
         /// </summary>

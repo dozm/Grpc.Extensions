@@ -7,7 +7,7 @@ namespace Grpc.Extensions.Client
 {
     public interface IChannelProvider
     {
-        Channel GetChannel(string serviceName);
+        Channel GetChannel(string grpcServiceName);
         Channel GetChannel(Type clientType);
     }
 }

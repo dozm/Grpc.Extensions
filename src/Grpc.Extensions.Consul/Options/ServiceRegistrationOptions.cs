@@ -11,6 +11,11 @@ namespace Grpc.Extensions.Consul.Options
         /// </summary>
         public string ConsulServiceName { get; set; }
 
+        public string ServiceHost { get; set; }
+        public int ServicePort { get; set; }
+
         public bool EnableTagOverride { get; set; } = true;
+
+        public string[] Tags { get; set; }
     }
 }

@@ -7,22 +7,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Grpc.Extensions.Client
 {
-    public class ChannelPool : IChannelPool, IDisposable
+    public class LoadBalancer : ILoadBalancer, IDisposable
     {
         private readonly Lazy<ConcurrentQueue<Channel>> _lazy;
-        private readonly ILogger<ChannelPool> _logger;
+        private readonly ILogger<LoadBalancer> _logger;
         private readonly ServiceEndpoint _serviceEndpoint;
 
         private ConcurrentQueue<Channel> Pool => _lazy.Value;
 
-        public ChannelPool(ServiceEndpoint serviceEndpoint, ILogger<ChannelPool> logger)
+        public LoadBalancer(ServiceEndpoint serviceEndpoint, ILogger<LoadBalancer> logger)
         {
             _serviceEndpoint = serviceEndpoint;
             _lazy = new Lazy<ConcurrentQueue<Channel>>(InitQueue, true);
             _logger = logger;
         }
 
-        public Channel Rent()
+        public Channel GetChannel()
         {
             if (!Pool.TryDequeue(out var channel))
             {
@@ -56,7 +56,6 @@ namespace Grpc.Extensions.Client
         {
             var channel = new Channel(endpoint, ChannelCredentials.Insecure);
 
-            _logger.LogInformation($"### {channel.State} {channel.Target}");
             return channel;
 
         }
