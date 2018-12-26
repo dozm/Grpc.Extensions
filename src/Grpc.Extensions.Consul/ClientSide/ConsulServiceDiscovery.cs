@@ -1,14 +1,11 @@
 ﻿using Consul;
+using Grpc.Extensions.Client;
+using Grpc.Extensions.ExecutionStrategies;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using System.Linq;
-using Grpc.Extensions.Client;
-using System.Threading.Tasks;
-using Grpc.Extensions.ExecutionStrategies;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Grpc.Extensions.Consul.ClientSide
 {
@@ -47,7 +44,7 @@ namespace Grpc.Extensions.Consul.ClientSide
 
                 return endpoints.ToArray();
             }
-        }       
+        }
 
         private ConsulClient CreateConsulClient()
         {

@@ -1,9 +1,7 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Grpc.Extensions.Client
 {
@@ -11,7 +9,6 @@ namespace Grpc.Extensions.Client
     {
         private readonly Lazy<CallInvoker> _callInvokeLazy;
         private CallInvoker InterceptedCallInvoker => _callInvokeLazy.Value;
-
 
         public CallInvokerWrapper(StatelessCallInvoker callInvoker, IInterceptorProvider interceptorProvider)
         {

@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Grpc.Extensions.ExecutionStrategies
 {
@@ -13,6 +10,7 @@ namespace Grpc.Extensions.ExecutionStrategies
         {
             _loggerFactory = loggerFactory;
         }
+
         public IExecutionStrategy Create()
         {
             return new RetryingExecutionStrategy(_loggerFactory.CreateLogger<RetryingExecutionStrategy>());

@@ -1,7 +1,7 @@
-﻿using System;
-using Consul;
+﻿using Consul;
 using Grpc.Extensions.ServerSide;
 using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Net;
 
@@ -21,7 +21,6 @@ namespace Grpc.Extensions.Consul.ServerSide
             _checkRegistrationProvider = checkRegistrationProvider;
         }
 
-
         public AgentServiceRegistration Create()
         {
             var serviceRegistrationOptions = _options.ServiceRegistration;
@@ -38,7 +37,7 @@ namespace Grpc.Extensions.Consul.ServerSide
                 Tags = serviceRegistrationOptions.Tags
             };
 
-            serviceRegistration.Checks = _checkRegistrationProvider.GetCheckRegistration(serviceRegistration);          
+            serviceRegistration.Checks = _checkRegistrationProvider.GetCheckRegistration(serviceRegistration);
 
             return serviceRegistration;
         }

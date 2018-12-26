@@ -2,14 +2,9 @@
 using Grpc.Extensions.Internal;
 using Grpc.Extensions.ServerSide;
 using Grpc.Extensions.ServerSide.HealthCheck;
-using Grpc.HealthCheck;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using static Grpc.Health.V1.Health;
 

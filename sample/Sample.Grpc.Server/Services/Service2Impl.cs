@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Grpc.Core;
-using Grpc.Extensions;
+﻿using Grpc.Core;
 using Sample.Messages;
-using Sample.Services;
+using System;
+using System.Threading.Tasks;
 using static Sample.Services.Service2;
 
 namespace Sample.Grpc.Server.Services

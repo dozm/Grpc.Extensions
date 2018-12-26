@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Grpc.Extensions.Client
 {
@@ -9,6 +7,7 @@ namespace Grpc.Extensions.Client
     {
         private string _serviceName;
         public Type ClientType { get; }
+
         public string ServiceName
         {
             get
@@ -38,7 +37,6 @@ namespace Grpc.Extensions.Client
                 {
                     return serviceNameField.GetValue(null) as string;
                 }
-
             }
 
             throw new Exception($"Not found default service name of {ClientType}");

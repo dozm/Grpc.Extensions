@@ -10,6 +10,7 @@ namespace Grpc.Extensions.ServerSide.HealthCheck
     public class HealthService : HealthBase
     {
         private readonly object myLock = new object();
+
         private readonly Dictionary<string, HealthCheckResponse.Types.ServingStatus> statusMap =
             new Dictionary<string, HealthCheckResponse.Types.ServingStatus>();
 

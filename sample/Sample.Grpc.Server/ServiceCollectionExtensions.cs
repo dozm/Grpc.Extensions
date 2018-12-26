@@ -1,13 +1,9 @@
-﻿using Grpc.Core;
-using Grpc.Core.Interceptors;
+﻿using Grpc.Core.Interceptors;
 using Grpc.Extensions;
 using Grpc.Extensions.Consul.ServerSide;
 using Microsoft.Extensions.DependencyInjection;
 using Sample.Grpc.Server.Interceptors;
 using Sample.Grpc.Server.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sample.Grpc.Server
 {
@@ -22,14 +18,11 @@ namespace Sample.Grpc.Server
                 //.AddHostedService<Hosted>()
                 .UseHostedGrpcServer(options =>
                 {
-                 
                 })
                 .UseConsulServiceRegister()
                 .UseTcpCheck()
-               
-               
-                ;
 
+                ;
 
             return services;
         }

@@ -1,9 +1,6 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Sample.Grpc.Server.Interceptors
@@ -11,12 +8,14 @@ namespace Sample.Grpc.Server.Interceptors
     public class AccessInterceptor : Interceptor
     {
         private readonly ILogger _logger;
+
         public AccessInterceptor(ILogger<AccessInterceptor> logger)
         {
             _logger = logger;
         }
 
         #region 服务器端拦截方法
+
         public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
         {
             _logger.LogInformation($"UnaryServerHandler log start {context.Host}  {context.Method}");
@@ -56,8 +55,7 @@ namespace Sample.Grpc.Server.Interceptors
             _logger.LogInformation($"ServerStreamingServerHandler log end {context.Host}  {context.Method}");
         }
 
-        #endregion
-
+        #endregion 服务器端拦截方法
 
         #region 客户端拦截方法
 
@@ -71,7 +69,6 @@ namespace Sample.Grpc.Server.Interceptors
             return response;
         }
 
-
         public override AsyncUnaryCall<TResponse> AsyncUnaryCall<TRequest, TResponse>(TRequest request, ClientInterceptorContext<TRequest, TResponse> context, AsyncUnaryCallContinuation<TRequest, TResponse> continuation)
         {
             _logger.LogInformation($"AsyncUnaryCall log start {context.Host}  {context.Method.Name}");
@@ -81,8 +78,6 @@ namespace Sample.Grpc.Server.Interceptors
             return response;
         }
 
-
-
-        #endregion
+        #endregion 客户端拦截方法
     }
 }

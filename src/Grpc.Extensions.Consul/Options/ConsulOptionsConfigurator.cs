@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Grpc.Extensions.Consul.Options
 {
@@ -46,9 +43,6 @@ namespace Grpc.Extensions.Consul.Options
                 sro.ConsulServiceName = consulServiceName;
 
             sro.EnableTagOverride = conifg.GetValue<bool?>("EnableTagOverride") ?? true;
-
         }
-
-    
     }
 }

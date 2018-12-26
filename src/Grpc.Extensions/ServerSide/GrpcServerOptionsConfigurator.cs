@@ -1,22 +1,21 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Grpc.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Linq;
-using Grpc.Core;
 using System.IO;
+using System.Linq;
 
 namespace Grpc.Extensions
 {
     public class GrpcServerOptionsConfigurator : IConfigureOptions<GrpcServerOptions>
     {
         readonly private IConfiguration _config;
+
         public GrpcServerOptionsConfigurator(IConfiguration config)
         {
             _config = config;
         }
+
         public void Configure(GrpcServerOptions options)
         {
             var grpcServerConfig = _config.GetSection("GrpcServerOptions");
@@ -26,7 +25,6 @@ namespace Grpc.Extensions
             var serverPosts = grpcServerConfig.GetSection("ServerPorts").Get<List<ServerPortConfig>>();
 
             serverPosts?.ForEach(c => options.AddPort(c.Host ?? "[::]", c.Port ?? ServerPort.PickUnused, CreateCredentials(c.Credentials)));
-
         }
 
         private ServerCredentials CreateCredentials(SslServerCredentialsConfig credConfig)
@@ -51,7 +49,6 @@ namespace Grpc.Extensions
             }
 
             return creds;
-
         }
 
         private class ServerPortConfig

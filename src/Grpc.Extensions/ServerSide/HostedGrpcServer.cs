@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using Grpc.Core.Interceptors;
 using Grpc.Extensions.ServerSide;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,8 +6,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,7 +42,7 @@ namespace Grpc.Extensions.Internal
             _server = BuildServer();
 
             _logger.LogInformation("Grpc server starting");
-            _server.Start();            
+            _server.Start();
 
             var context = new GrpcServerContext(_server);
             var contextAccessor = _contextAccessor as GrpcServerContextAccessor;
@@ -78,7 +75,7 @@ namespace Grpc.Extensions.Internal
                 return builder.Build();
             }
 
-            if(_options.ServerPorts?.Count < 1)
+            if (_options.ServerPorts?.Count < 1)
             {
                 builder.AutoPort();
             }
@@ -86,11 +83,12 @@ namespace Grpc.Extensions.Internal
             {
                 _options.ServerPorts.ForEach(p => builder.AddPort(p));
             }
-           
+
             _options.ChannelOptions?.ForEach(o => builder.AddChannelOption(o));
 
             return builder.Build();
         }
+
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Grpc server stopping");

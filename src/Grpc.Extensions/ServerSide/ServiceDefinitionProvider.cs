@@ -1,8 +1,6 @@
 ﻿using Grpc.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Grpc.Extensions.Internal
 {
@@ -14,9 +12,9 @@ namespace Grpc.Extensions.Internal
         {
             _factories = factories;
         }
+
         public IEnumerable<ServerServiceDefinition> GetServiceDefinitions()
         {
-
             return _factories.Select(f => f.Create());
         }
     }

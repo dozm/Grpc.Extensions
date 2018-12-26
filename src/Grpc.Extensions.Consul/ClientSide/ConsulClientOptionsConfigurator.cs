@@ -1,10 +1,7 @@
 ﻿using Grpc.Extensions.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 namespace Grpc.Extensions.Consul.ClientSide
 {
@@ -18,6 +15,7 @@ namespace Grpc.Extensions.Consul.ClientSide
             _config = config;
             _grpcClientOptions = grpcClientOptions.Value;
         }
+
         public void Configure(ConsulClientOptions options)
         {
             var config = _config.GetSection("Consul");

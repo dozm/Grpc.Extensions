@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Grpc.Core;
-using Grpc.Extensions;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Sample.Messages;
-using Sample.Services;
+using System;
+using System.Threading.Tasks;
 using static Sample.Services.Service1;
 
 namespace Sample.Grpc.Server.Services
@@ -31,7 +27,5 @@ namespace Sample.Grpc.Server.Services
             _logger.LogInformation($"API2 收到请求：{request.Message}");
             return new Response1 { Message = $"Service1Impl API2 {DateTime.Now}" };
         }
-
-
     }
 }

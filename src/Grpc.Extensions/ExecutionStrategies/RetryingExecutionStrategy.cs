@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Grpc.Extensions.ExecutionStrategies
 {
@@ -20,11 +18,12 @@ namespace Grpc.Extensions.ExecutionStrategies
         public RetryingExecutionStrategy(int maxRetryCount, ILogger<RetryingExecutionStrategy> logger)
             : this(maxRetryCount, DefaultMaxDelay, logger)
         { }
+
         public RetryingExecutionStrategy(TimeSpan maxDelay, ILogger<RetryingExecutionStrategy> logger)
             : this(DefaultMaxRetryCount, maxDelay, logger)
         { }
 
-        protected  override bool ShouldRetryOn(Exception exception)
+        protected override bool ShouldRetryOn(Exception exception)
         {
             return true;
         }

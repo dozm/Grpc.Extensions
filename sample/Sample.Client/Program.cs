@@ -4,16 +4,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Sample.Host
 {
-    class Program
+    internal class Program
     {
         public static void Main(string[] args)
         {
-          
-
             using (var host = BuildHost(args))
             {
                 host.Run();
@@ -46,7 +43,7 @@ namespace Sample.Host
                 .ConfigureLogging((ctx, b) =>
                 {
                     b.AddConfiguration(ctx.Configuration.GetSection("Logging"))
-                    
+
                     .AddConsole()
                  ;
                 })

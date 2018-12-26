@@ -1,7 +1,6 @@
 using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Extensions.Test.Messages;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,7 +31,6 @@ namespace Grpc.Extensions.Test
             var server = builder.Build();
 
             Assert.NotNull(server.Ports);
-
         }
 
         private Task<Response1> Handler(Request1 request, ServerCallContext context)

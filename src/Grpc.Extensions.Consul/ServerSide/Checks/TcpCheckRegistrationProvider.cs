@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Consul;
+﻿using Consul;
+using System;
 
 namespace Grpc.Extensions.Consul.ServerSide
 {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Grpc.Core;
+using System;
 using System.Reflection;
-using System.Text;
-using Grpc.Core;
 
 namespace Grpc.Extensions
 {
@@ -31,8 +29,5 @@ namespace Grpc.Extensions
 
             throw new Exception($"无法为 {serviceType} 找到 BindService 方法。");
         }
-
-
-
     }
 }

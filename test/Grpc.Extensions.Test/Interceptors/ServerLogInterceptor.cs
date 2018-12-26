@@ -2,8 +2,6 @@
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Grpc.Extensions.Test.Interceptors
@@ -11,6 +9,7 @@ namespace Grpc.Extensions.Test.Interceptors
     public class ServerLogInterceptor : Interceptor
     {
         private readonly ILogger _logger;
+
         public ServerLogInterceptor(ILogger<ServerLogInterceptor> logger)
         {
             _logger = logger;
@@ -25,7 +24,6 @@ namespace Grpc.Extensions.Test.Interceptors
 
             _logger.LogInformation("log end");
             Console.WriteLine("log end");
-
 
             return response;
         }

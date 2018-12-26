@@ -1,8 +1,4 @@
-﻿using Grpc.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace Grpc.Extensions.ServerSide
@@ -11,7 +7,6 @@ namespace Grpc.Extensions.ServerSide
     {
         Task StartedAsync(CancellationToken cancellationToken);
 
-
-        Task StoppingAsync( CancellationToken cancellationToken);
+        Task StoppingAsync(CancellationToken cancellationToken);
     }
 }

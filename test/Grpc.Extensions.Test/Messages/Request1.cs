@@ -1,8 +1,6 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Grpc.Extensions.Test.Messages
 {

@@ -1,37 +1,34 @@
 ﻿using Grpc.Core;
 using Grpc.Extensions.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using Consul;
-using System.Net;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Grpc.Extensions.Consul.ClientSide
 {
     public class ChannelProviderWithConsul : IChannelProvider
     {
-
-        public readonly ConcurrentDictionary<string, ILoadBalancer> _poolMap = new ConcurrentDictionary<string, ILoadBalancer>();
+        public readonly ConcurrentDictionary<string, ILoadBalancer> _loadBalancerMap = new ConcurrentDictionary<string, ILoadBalancer>();
 
         private readonly GrpcClientOptions _grpcClientOptions;
         private readonly ConsulClientOptions _options;
         private readonly IServiceDiscovery _serviceDiscovery;
+        private readonly IChannelFactory _channelFactory;
         private readonly ILoggerFactory _loggerFactory;
 
         public ChannelProviderWithConsul(
             IOptions<ConsulClientOptions> options,
-             IOptions<GrpcClientOptions> grpcClientOptions,
+            IOptions<GrpcClientOptions> grpcClientOptions,
+            IChannelFactory channelFactory,
             IServiceDiscovery serviceDiscovery,
             ILoggerFactory loggerFactory)
         {
             _options = options.Value;
             _grpcClientOptions = grpcClientOptions.Value;
             _serviceDiscovery = serviceDiscovery;
+            _channelFactory = channelFactory;
             _loggerFactory = loggerFactory;
         }
 
@@ -47,20 +44,8 @@ namespace Grpc.Extensions.Consul.ClientSide
                 throw new Exception($"没有找到 {clientType} 所的应用的 consul 服务。");
             }
 
-            var endpoints = _serviceDiscovery.DiscoverAsync(consulServiceName).GetAwaiter().GetResult();
-
-            return GetChannelFromPool(consulServiceName);
-        }
-
-
-
-        private Channel CreateChannel(ServiceEndPoint[] endpoints)
-        {
-            var rand = new Random();
-
-            var target = endpoints[rand.Next(0, endpoints.Length)];
-
-            return new Channel(target.ToString(), ChannelCredentials.Insecure);
+            var loadBalancer = _loadBalancerMap.GetOrAdd(consulServiceName, CreateLoadBalancer);
+            return loadBalancer.SelectChannel();
         }
 
         private Type GetClientType(string grpcServiceName)
@@ -72,21 +57,9 @@ namespace Grpc.Extensions.Consul.ClientSide
             return clientType;
         }
 
-        private Channel GetChannelFromPool(string consulServiceName)
+        private ILoadBalancer CreateLoadBalancer(string consulServiceName)
         {
-
-            var pool = _poolMap.GetOrAdd(consulServiceName, CreatePool);
-
-            return pool.GetChannel();
+            return new LoadBalancer(consulServiceName, _serviceDiscovery, _channelFactory, _loggerFactory);
         }
-
-        private ILoadBalancer CreatePool(string consulServiceName)
-        {
-            
-             return new LoadBalancer(consulServiceName, _serviceDiscovery, _loggerFactory);
-        }
-
-        HashSet<Channel> ChannelSet = new HashSet<Channel>();
-
     }
 }

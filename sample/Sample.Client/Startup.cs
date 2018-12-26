@@ -1,16 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Grpc.Core.Interceptors;
+using Grpc.Extensions.Client;
+using Grpc.Extensions.Consul.ClientSide;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Sample.Client.Interceptors;
 using Sample.Grpc.Server;
-using Microsoft.Extensions.Logging;
-using Grpc.Core.Interceptors;
 using static Sample.Services.Service1;
 using static Sample.Services.Service2;
-using Grpc.Extensions.Client;
-using Sample.Client.Interceptors;
-using Grpc.Extensions.Consul.ClientSide;
 
 namespace Sample.Host
 {

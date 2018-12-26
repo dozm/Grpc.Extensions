@@ -1,21 +1,18 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace Grpc.Extensions
 {
     public class ServerBuilder
     {
-
         private readonly List<Interceptor> _interceptors = new List<Interceptor>();
         private readonly List<ServerPort> _serverPorts = new List<ServerPort>();
         private readonly List<ChannelOption> _channelOptions = new List<ChannelOption>();
 
         private readonly List<ServerServiceDefinition> _serviceDefinitions = new List<ServerServiceDefinition>();
+
         public ServerBuilder UseInterceptor(Interceptor interceptor)
         {
             _interceptors.Add(interceptor);

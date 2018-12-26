@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Grpc.Extensions.Client.Options;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Grpc.Extensions.Client
 {
@@ -22,7 +23,7 @@ namespace Grpc.Extensions.Client
             _logger = logger;
         }
 
-        public Channel GetChannel()
+        public Channel SelectChannel()
         {
             if (!Pool.TryDequeue(out var channel))
             {
@@ -34,10 +35,12 @@ namespace Grpc.Extensions.Client
                 case ChannelState.Shutdown:
                     channel = CreateChannel(channel.Target);
                     break;
+
                 case ChannelState.TransientFailure:
                     channel.ShutdownAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                     channel = CreateChannel(channel.Target);
                     break;
+
                 default:
                     break;
             }
@@ -45,6 +48,12 @@ namespace Grpc.Extensions.Client
             Pool.Enqueue(channel);
 
             return channel;
+        }
+
+        public async Task<Channel> SelectChannelAsync()
+        {
+            await Task.CompletedTask;
+            return SelectChannel();
         }
 
         private ConcurrentQueue<Channel> InitQueue()
@@ -57,7 +66,6 @@ namespace Grpc.Extensions.Client
             var channel = new Channel(endpoint, ChannelCredentials.Insecure);
 
             return channel;
-
         }
 
         private Channel CheckRecreate(Channel channel)
@@ -66,6 +74,7 @@ namespace Grpc.Extensions.Client
             {
                 case ChannelState.Shutdown:
                     return CreateChannel(channel.Target);
+
                 case ChannelState.TransientFailure:
                     channel.ShutdownAsync();
                     return CreateChannel(channel.Target);

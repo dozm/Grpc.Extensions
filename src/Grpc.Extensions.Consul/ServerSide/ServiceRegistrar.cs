@@ -1,16 +1,14 @@
 ﻿using Consul;
+using Grpc.Extensions.ExecutionStrategies;
 using Grpc.Extensions.ServerSide;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using Grpc.Extensions.ExecutionStrategies;
-using Microsoft.Extensions.Hosting;
-using System.Net.Http;
-using System.Net;
-using Newtonsoft.Json;
 
 namespace Grpc.Extensions.Consul.ServerSide
 {
@@ -42,7 +40,6 @@ namespace Grpc.Extensions.Consul.ServerSide
             _options = options.Value;
             _logger = logger;
             _grpcServerContextAccessor = grpcServerContextAccessor;
-
         }
 
         public virtual async Task StartAsync(CancellationToken cancellationToken)
@@ -121,6 +118,7 @@ namespace Grpc.Extensions.Consul.ServerSide
                             await ReRegisterAsync(_serviceRegistration);
                         }
                         break;
+
                     default:
                         break;
                 }
@@ -149,7 +147,6 @@ namespace Grpc.Extensions.Consul.ServerSide
             }
             _serviceRegistered = await RegisterAsync(registration);
             TryStartTTL(_serviceRegistered, registration);
-
         }
 
         protected virtual async Task DeregisterAsync(string serviceId, CancellationToken cancellationToken = default)

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Grpc.Core;
-using Grpc.Core.Interceptors;
-using System.Linq;
-using System.Collections.Concurrent;
-using System.Net;
-using Microsoft.Extensions.Options;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Grpc.Extensions.Client
 {
@@ -29,7 +25,7 @@ namespace Grpc.Extensions.Client
                 throw new ArgumentException($"Parameter {nameof(serviceName)} cannot be null.");
 
             var channelPool = _channelPools.GetOrAdd(serviceName, CreateChannelPool);
-            var channel = channelPool.GetChannel();
+            var channel = channelPool.SelectChannel();
 
             return channel;
         }
@@ -39,7 +35,7 @@ namespace Grpc.Extensions.Client
             var serviceName = _options.Clients.FirstOrDefault(cm => cm.ClientType == clientType)?.ServiceName;
 
             return GetChannel(serviceName);
-        }        
+        }
 
         private ILoadBalancer CreateChannelPool(string serviceName)
         {
@@ -48,7 +44,7 @@ namespace Grpc.Extensions.Client
                 throw new Exception($"Not found endpoint config of {serviceName}");
             }
 
-            return new ChannelPool(serviceEndpoint, _loggerFactory.CreateLogger<ChannelPool>());
+            return new LoadBalancer(serviceEndpoint, _loggerFactory.CreateLogger<LoadBalancer>());
         }
     }
 }

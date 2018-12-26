@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Sample.Host
 {
-    class Program
+    internal class Program
     {
         public static void Main(string[] args)
         {
@@ -44,7 +44,7 @@ namespace Sample.Host
                 .ConfigureLogging((ctx, b) =>
                 {
                     b.AddConfiguration(ctx.Configuration.GetSection("Logging"))
-                    
+
                     .AddConsole()
                  ;
                 })

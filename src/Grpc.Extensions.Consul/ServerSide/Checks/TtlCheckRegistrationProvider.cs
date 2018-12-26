@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Consul;
+﻿using Consul;
+using System;
 
 namespace Grpc.Extensions.Consul.ServerSide
 {
-    class TtlCheckRegistrationProvider : IAgentCheckRegistrationProvider
+    internal class TtlCheckRegistrationProvider : IAgentCheckRegistrationProvider
     {
         public AgentCheckRegistration[] GetCheckRegistration(AgentServiceRegistration serviceRegistration)
         {

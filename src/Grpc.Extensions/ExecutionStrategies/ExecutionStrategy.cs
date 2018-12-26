@@ -96,7 +96,6 @@ namespace Grpc.Extensions.ExecutionStrategies
             Func<TState, TResult> operation,
             Func<TState, ExecutionResult<TResult>> verifySucceeded)
         {
-
             if (Suspended)
             {
                 return operation(state);
@@ -148,7 +147,6 @@ namespace Grpc.Extensions.ExecutionStrategies
                         throw new Exception($"Maximum number of retries ({MaxRetryCount}) exceeded with '{GetType().Name}'. See inner exception for the most recent failure.", ex);
                     }
 
-
                     LogRetry(delay.Value, ExceptionsEncountered);
                     OnRetry();
                 }
@@ -159,7 +157,6 @@ namespace Grpc.Extensions.ExecutionStrategies
                 }
             }
         }
-
 
         public virtual Task<TResult> ExecuteAsync<TState, TResult>(
             TState state,
@@ -232,7 +229,6 @@ namespace Grpc.Extensions.ExecutionStrategies
         /// </summary>
         protected virtual void OnFirstExecution()
         {
-
             ExceptionsEncountered.Clear();
         }
 
@@ -266,13 +262,11 @@ namespace Grpc.Extensions.ExecutionStrategies
 
         protected abstract bool ShouldRetryOn(Exception exception);
 
-
         public static TResult CallOnWrappedException<TResult>(
             Exception exception, Func<Exception, TResult> exceptionHandler)
         {
             return exceptionHandler(exception);
         }
-
 
         protected virtual void LogRetry(TimeSpan delay, IReadOnlyList<Exception> exceptionsEncountered)
         {

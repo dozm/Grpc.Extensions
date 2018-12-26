@@ -3,9 +3,6 @@ using Grpc.Extensions.ExecutionStrategies;
 using Grpc.Extensions.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Grpc.Extensions.Client
 {
@@ -18,8 +15,8 @@ namespace Grpc.Extensions.Client
             services.TryAddSingleton<CallInvoker, CallInvokerWrapper>();
             services.TryAddSingleton<IInterceptorProvider, InterceptorProvider>();
             services.TryAddSingleton<IChannelProvider, ChannelProvider>();
+            services.TryAddSingleton<IChannelFactory, ChannelFactory>();
             services.ConfigureOptions<GrpcClientOptionsConfigurator>();
-
 
             return services;
         }
@@ -27,7 +24,6 @@ namespace Grpc.Extensions.Client
         public static IServiceCollection AddGrpcClient<TClient>(this IServiceCollection services)
             where TClient : ClientBase
         {
-
             services.AddTransient<TClient>();
 
             services.Configure<GrpcClientOptions>(options =>

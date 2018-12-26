@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Grpc.Extensions.ServerSide
+﻿namespace Grpc.Extensions.ServerSide
 {
     internal class GrpcServerContextAccessor : IGrpcServerContextAccessor
     {

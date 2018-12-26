@@ -1,14 +1,9 @@
 ﻿using Grpc.Extensions;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Sample.Grpc.Server.Interceptors;
-using Grpc.Core.Interceptors;
 
 namespace Sample.Grpc.Server
 {
@@ -18,7 +13,7 @@ namespace Sample.Grpc.Server
         private readonly IInterceptorProvider _interceptorProvider;
         private readonly ILogger<Hosted> _logger;
 
-        public Hosted(IServiceDefinitionProvider serviceDefinitionProvider, 
+        public Hosted(IServiceDefinitionProvider serviceDefinitionProvider,
             IInterceptorProvider interceptorProvider,
             ILogger<Hosted> logger)
         {
@@ -27,6 +22,7 @@ namespace Sample.Grpc.Server
             _interceptorProvider = interceptorProvider;
             _logger = logger;
         }
+
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Starting");
@@ -40,9 +36,8 @@ namespace Sample.Grpc.Server
             server.Start();
 
             _logger.LogInformation("Started");
-  
 
-           var listening = server.Ports.Select(p => $"{p.Host}:{p.BoundPort}").Aggregate((ports, port) => $"{ports}; {port}");
+            var listening = server.Ports.Select(p => $"{p.Host}:{p.BoundPort}").Aggregate((ports, port) => $"{ports}; {port}");
             _logger.LogInformation($"Listening: {listening}");
         }
 

@@ -1,9 +1,7 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
-using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace Grpc.Extensions
 {
@@ -29,6 +27,7 @@ namespace Grpc.Extensions
         {
             return builder.AddPort(host, ServerPort.PickUnused);
         }
+
         public static ServerBuilder AutoPort(this ServerBuilder builder)
         {
             return builder.AddPort(ServerPort.PickUnused);
@@ -45,8 +44,7 @@ namespace Grpc.Extensions
 
         public static ServerBuilder UseInterceptor(this ServerBuilder builder, IEnumerable<Interceptor> interceptors)
         {
-
-            foreach(var i in interceptors)
+            foreach (var i in interceptors)
             {
                 builder.UseInterceptor(i);
             }
@@ -54,7 +52,7 @@ namespace Grpc.Extensions
             return builder;
         }
 
-        public static ServerBuilder AddChannelOption(this ServerBuilder builider,IEnumerable<ChannelOption> options)
+        public static ServerBuilder AddChannelOption(this ServerBuilder builider, IEnumerable<ChannelOption> options)
         {
             foreach (var o in options)
             {

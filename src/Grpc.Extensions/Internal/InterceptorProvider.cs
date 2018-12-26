@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Grpc.Core.Interceptors;
 using System.Collections.Generic;
-using System.Text;
-using Grpc.Core.Interceptors;
 
 namespace Grpc.Extensions.Internal
 {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Consul;
+﻿using Consul;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Grpc.Extensions.Consul
 {
@@ -14,9 +12,10 @@ namespace Grpc.Extensions.Consul
         {
             _options = options.Value;
         }
+
         public ConsulClient Create()
         {
-            if(string.IsNullOrEmpty(_options.Address))
+            if (string.IsNullOrEmpty(_options.Address))
             {
                 throw new ArgumentException("未配置 Consul 服务器地址。");
             }

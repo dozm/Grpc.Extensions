@@ -1,13 +1,12 @@
 ﻿using Grpc.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Grpc.Extensions.Client
 {
     public interface ILoadBalancer
     {
-        Channel GetChannel();
+        Task<Channel> SelectChannelAsync();
 
+        Channel SelectChannel();
     }
 }
