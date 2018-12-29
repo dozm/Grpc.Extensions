@@ -3,7 +3,7 @@ using Grpc.Core.Interceptors;
 using System;
 using System.Linq;
 
-namespace Grpc.Extensions.Client
+namespace Grpc.Extensions.ClientSide
 {
     public class CallInvokerWrapper : CallInvoker
     {

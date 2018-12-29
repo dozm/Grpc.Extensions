@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
 
-namespace Grpc.Extensions.Client
+namespace Grpc.Extensions.ClientSide
 {
     public class ChannelFactory : IChannelFactory
     {

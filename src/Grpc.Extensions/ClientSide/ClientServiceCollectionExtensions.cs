@@ -4,7 +4,7 @@ using Grpc.Extensions.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Grpc.Extensions.Client
+namespace Grpc.Extensions.ClientSide
 {
     public static class ClientServiceCollectionExtensions
     {
@@ -16,6 +16,8 @@ namespace Grpc.Extensions.Client
             services.TryAddSingleton<IInterceptorProvider, InterceptorProvider>();
             services.TryAddSingleton<IChannelProvider, ChannelProvider>();
             services.TryAddSingleton<IChannelFactory, ChannelFactory>();
+            services.TryAddSingleton<IServiceDiscovery, DefaultServiceDiscovery>();
+            services.TryAddSingleton<ILoadBalancerProvider, LoadBalancerProvider>();
             services.ConfigureOptions<GrpcClientOptionsConfigurator>();
 
             return services;

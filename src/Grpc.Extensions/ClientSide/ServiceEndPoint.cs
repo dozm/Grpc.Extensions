@@ -1,4 +1,4 @@
-﻿namespace Grpc.Extensions.Client
+﻿namespace Grpc.Extensions.ClientSide
 {
     public class ServiceEndPoint
     {

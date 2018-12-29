@@ -1,8 +1,7 @@
 ﻿using Grpc.Core;
-using Grpc.Extensions.Client;
 using System;
 
-namespace Grpc.Extensions.Consul.ClientSide
+namespace Grpc.Extensions.ClientSide
 {
     public class ChannelEntry : IDisposable
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Grpc.Extensions.Client
+namespace Grpc.Extensions.ClientSide
 {
     public class ClientMetadata
     {

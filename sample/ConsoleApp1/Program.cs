@@ -1,11 +1,10 @@
-﻿using Grpc.Extensions.Client;
+﻿using Grpc.Extensions.ClientSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using LoadBalancer = Grpc.Extensions.Consul.ClientSide.LoadBalancer;
 
 namespace ConsoleApp1
 {
@@ -36,7 +35,8 @@ namespace ConsoleApp1
 
         public static void Test1()
         {
-            LoadBalancer lb = new LoadBalancer("svc1", new FakeServiceDiscovery(), Services.GetService<ILoggerFactory>());
+            var channelFactory = Services.GetService<IChannelFactory>();
+            LoadBalancer lb = new LoadBalancer("svc1", new FakeServiceDiscovery(), channelFactory, Services.GetService<ILoggerFactory>());
 
             Stopwatch sw = new Stopwatch();
             sw.Start();

@@ -1,7 +1,7 @@
 ﻿using Grpc.Core;
 using System;
 
-namespace Grpc.Extensions.Client
+namespace Grpc.Extensions.ClientSide
 {
     public interface IChannelProvider
     {

@@ -1,4 +1,4 @@
-﻿using Grpc.Extensions.Client;
+﻿using Grpc.Extensions.ClientSide;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Grpc.Extensions.Consul.ClientSide
@@ -9,8 +9,7 @@ namespace Grpc.Extensions.Consul.ClientSide
         {
             services.ConfigureOptions<ConsulClientOptionsConfigurator>();
             services.AddTransient<IServiceDiscovery, ConsulServiceDiscovery>();
-            services.AddTransient<IChannelProvider, ChannelProviderWithConsul>();
-
+            services.AddSingleton<ILoadBalancerProvider, LoadBalancerProvider>();
             return services;
         }
     }

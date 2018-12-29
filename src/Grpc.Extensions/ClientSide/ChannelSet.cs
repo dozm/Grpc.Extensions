@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Grpc.Extensions.Consul.ClientSide
+namespace Grpc.Extensions.ClientSide
 {
     public class ChannelSet : IEnumerable<ChannelEntry>
     {

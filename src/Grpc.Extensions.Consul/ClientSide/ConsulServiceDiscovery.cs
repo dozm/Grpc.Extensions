@@ -1,5 +1,5 @@
 ﻿using Consul;
-using Grpc.Extensions.Client;
+using Grpc.Extensions.ClientSide;
 using Grpc.Extensions.ExecutionStrategies;
 using Microsoft.Extensions.Options;
 using System;

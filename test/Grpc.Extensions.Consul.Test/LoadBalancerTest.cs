@@ -1,10 +1,8 @@
-using Grpc.Extensions.Client;
-using System.Diagnostics;
+using Grpc.Extensions.ClientSide;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using LoadBalancer = Grpc.Extensions.Consul.ClientSide.LoadBalancer;
 
 namespace Grpc.Extensions.Consul.Test
 {
@@ -20,20 +18,20 @@ namespace Grpc.Extensions.Consul.Test
         [Fact]
         public void Test1()
         {
-            LoadBalancer lb = new LoadBalancer("svc1", new FakeServiceDiscovery(), null);
+            //LoadBalancer lb = new LoadBalancer("svc1", new FakeServiceDiscovery(), null);
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var result = Parallel.For(0, 10000, i =>
-            {
-                var task = lb.TryUpdateAsync();
-                _output.WriteLine($"{task.GetHashCode()},  {task.IsCompleted}  {i}");
-                task.Wait();
-            });
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            //var result = Parallel.For(0, 10000, i =>
+            //{
+            //    var task = lb.TryUpdateAsync();
+            //    _output.WriteLine($"{task.GetHashCode()},  {task.IsCompleted}  {i}");
+            //    task.Wait();
+            //});
 
-            _output.WriteLine($"{result.IsCompleted}");
-            sw.Stop();
-            _output.WriteLine($"时间：{sw.Elapsed}");
+            //_output.WriteLine($"{result.IsCompleted}");
+            //sw.Stop();
+            //_output.WriteLine($"时间：{sw.Elapsed}");
         }
     }
 

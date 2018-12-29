@@ -1,4 +1,4 @@
-﻿using Grpc.Extensions.Client;
+﻿using Grpc.Extensions.ClientSide;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;

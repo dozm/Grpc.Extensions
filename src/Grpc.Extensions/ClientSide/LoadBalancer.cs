@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using Grpc.Extensions.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,11 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Grpc.Extensions.Consul.ClientSide
+namespace Grpc.Extensions.ClientSide
 {
-    /// <summary>
-    ///  每个 consul 服务 对应一个 LoadBalancer
-    /// </summary>
     public class LoadBalancer : ILoadBalancer
     {
         private readonly AsyncLock _asyncLock = new AsyncLock();
@@ -25,13 +21,13 @@ namespace Grpc.Extensions.Consul.ClientSide
         private readonly IChannelFactory _channelFactory;
         private readonly ILogger<LoadBalancer> _logger;
 
-        public string ConsulServiceName { get; }
+        public string ServiceName { get; }
 
         private TaskCompletionSource<bool> _updateChannelsTcs;
 
-        public LoadBalancer(string consulServiceName, IServiceDiscovery serviceDiscovery, IChannelFactory channelFactory, ILoggerFactory loggerFactory)
+        public LoadBalancer(string serviceName, IServiceDiscovery serviceDiscovery, IChannelFactory channelFactory, ILoggerFactory loggerFactory)
         {
-            ConsulServiceName = consulServiceName;
+            ServiceName = serviceName;
             _serviceDiscovery = serviceDiscovery;
             _channelFactory = channelFactory;
             _logger = loggerFactory.CreateLogger<LoadBalancer>();
@@ -138,10 +134,10 @@ namespace Grpc.Extensions.Consul.ClientSide
 
         private async Task<ServiceEndPoint[]> DiscoveryEndPoints(CancellationToken cancellationToken = default)
         {
-            var endpoints = await _serviceDiscovery.DiscoverAsync(ConsulServiceName, cancellationToken);
+            var endpoints = await _serviceDiscovery.DiscoverAsync(ServiceName, cancellationToken);
             if (endpoints.Length == 0)
             {
-                throw new Exception($"未发现可用的服务:{ConsulServiceName}");
+                throw new Exception($"未发现可用的服务:{ServiceName}");
             }
 
             return endpoints;
