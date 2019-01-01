@@ -20,7 +20,8 @@ namespace Sample.Grpc.Server.Interceptors
 
         public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
         {
-            _logger.LogInformation($"===================================\nServer handling call {context.Host} {context.Method}");
+            _logger.LogInformation($"=================================================");
+            _logger.LogInformation($"Server handling call {context.Host} {context.Method}");
 
             try
             {

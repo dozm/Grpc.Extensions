@@ -23,9 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Host", "sample\Sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Client", "sample\Sample.Client\Sample.Client.csproj", "{AB5BA17D-2791-4755-8053-34B0B83F7B65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grpc.Extensions.Consul.Test", "test\Grpc.Extensions.Consul.Test\Grpc.Extensions.Consul.Test.csproj", "{B7E793A3-5CE1-40B8-9034-CC0D1A12AF63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grpc.Extensions.Consul.Test", "test\Grpc.Extensions.Consul.Test\Grpc.Extensions.Consul.Test.csproj", "{B7E793A3-5CE1-40B8-9034-CC0D1A12AF63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "sample\ConsoleApp1\ConsoleApp1.csproj", "{39B94299-6096-4688-A824-199D2B5A670E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "sample\ConsoleApp1\ConsoleApp1.csproj", "{39B94299-6096-4688-A824-199D2B5A670E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

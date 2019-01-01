@@ -1,5 +1,6 @@
 ﻿using Grpc.Extensions.ClientSide;
 using Grpc.Extensions.ClientSide.Interceptors;
+using Grpc.Extensions.Consul.ClientSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sample.Client.Interceptors;
@@ -35,6 +36,9 @@ namespace Sample.Host
 
             //.UseConsulServiceDiscovery(options =>
             //{
+            //    //options.Address = "http://192.168.8.6:8500";
+            //    options.Address = "http://172.20.10.3:8500";
+
             //    options.ServiceMaps.Add<Service1Client>("testsvc");
             //    options.ServiceMaps.Add<Service2Client>("testsvc");
             //})

@@ -35,6 +35,7 @@ namespace Grpc.Extensions.Consul.ClientSide
             if (config == null)
                 return;
 
+            // TODO:
             var dic = config.Get<Dictionary<string, string[]>>();
         }
     }

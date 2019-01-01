@@ -53,19 +53,23 @@ namespace Sample.Grpc.Server
         {
             do
             {
+                _logger.LogInformation("==============================================");
                 try
                 {
-                    var resp = await _service1Client.API1Async(new Request1() { Message = "111111111111  Hi, Server1." });
-                    _logger.LogWarning(resp.Message);
-                    //_logger.LogWarning(_service2Client.API2(new Request1 { Message = "222222222222 Hi,Servie2." }).Message);
-                    //_logger.LogWarning(_service1Client.API1Async(new Request1() { Message = "33333333333333 Hi, Server." }).GetAwaiter().GetResult().Message);
+                    LogResponse(await _service1Client.API1Async(new Request1() { Message = "Hi, Server1." }));
+
+                    //LogResponse(_service2Client.API2(new Request1 { Message = "Hi,Servie2." }));
                 }
                 catch
                 {
                 }
-
-                _logger.LogInformation("================================================");
+               
             } while (Console.ReadLine() == "");
+        }
+
+        private void LogResponse(Response1 response)
+        {
+            _logger.LogInformation(response.Message);
         }
     }
 }

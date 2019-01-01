@@ -9,7 +9,7 @@ namespace Grpc.Extensions.Logging
         private readonly string _categoryName;
         private ILogger _logger;
 
-        public LogAdapter(ILoggerFactory loggerFactory, string categoryName = "NoCategory")
+        public LogAdapter(ILoggerFactory loggerFactory, string categoryName = "Grpc.Core")
         {
             _loggerFactory = loggerFactory;
             _categoryName = categoryName;

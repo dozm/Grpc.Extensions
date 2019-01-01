@@ -1,6 +1,7 @@
 ﻿using Grpc.Extensions.Consul.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 
 namespace Grpc.Extensions.Consul.ServerSide
 {
@@ -13,6 +14,13 @@ namespace Grpc.Extensions.Consul.ServerSide
             services.AddHostedService<ServiceRegistrar>();
             services.TryAddTransient<IConsulClientFactory, ConsulClientFactory>();
             services.AddTransient<IAgentServiceRegistrationFactory, AgentServiceRegistrationFactory>();
+
+            return services;
+        }
+        public static IServiceCollection UseConsulServiceRegister(this IServiceCollection services, Action<ConsulOptions> action)
+        {
+            services.UseConsulServiceRegister()
+                .Configure(action);
 
             return services;
         }
