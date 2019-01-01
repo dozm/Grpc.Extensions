@@ -8,8 +8,23 @@ namespace Grpc.Extensions.Consul.ClientSide
         public string Address { get; set; }
 
         /// <summary>
-        ///  grpc client and consul mapping
+        /// grpc客户端类型和consul服务名称的映射。
         /// </summary>
-        public Dictionary<Type, string> ServiceMap { get; set; } = new Dictionary<Type, string>();
+        public ConsulServiceMaps ServiceMaps { get; set; } = new ConsulServiceMaps();
+    }
+
+    public class ConsulServiceMaps
+    {
+        public Dictionary<Type, string> Maps { get; set; } = new Dictionary<Type, string>();
+
+        public void Add<TGrpcClient>(string consulServiceName)
+        {
+            Maps[typeof(TGrpcClient)] = consulServiceName;
+        }
+
+        public string Get(Type grpcClientType)
+        {
+            return Maps[grpcClientType];
+        }
     }
 }

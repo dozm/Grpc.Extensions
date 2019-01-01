@@ -25,8 +25,6 @@ namespace Grpc.Extensions.Consul.ServerSide
         private readonly ILogger<ServiceRegistrar> _logger;
         private readonly IGrpcServerContextAccessor _grpcServerContextAccessor;
 
-        private GrpcServerContext Context => _grpcServerContextAccessor.Context;
-
         public ServiceRegistrar(IConsulClientFactory consulClientFactory,
             IAgentServiceRegistrationFactory registrationFactory,
             IExecutionStrategyFactory executionStrategyFactory,

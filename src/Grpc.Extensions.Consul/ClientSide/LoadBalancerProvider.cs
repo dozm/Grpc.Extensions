@@ -25,20 +25,19 @@ namespace Grpc.Extensions.Consul.ClientSide
             _loggerFactory = loggerFactory;
             _consulClientOptions = consulClientOptions.Value;
             _grpcClientOptions = grpcClientOptions.Value;
-
         }
 
         public ILoadBalancer GetLoadBalancer(string serviceName)
         {
             var clientType = _grpcClientOptions.Clients.FirstOrDefault(cm => cm.ServiceName == serviceName)?.ClientType;
 
-            if (!_consulClientOptions.ServiceMap.TryGetValue(clientType, out var consulServiceName))
-            {
+            var consulServiceName = _consulClientOptions.ServiceMaps.Get(clientType);
+            if (consulServiceName == null)
                 throw new Exception($"没有找到 {clientType} 所的应用的 consul 服务。");
-            }
 
             return _loadBalancerMap.GetOrAdd(consulServiceName, CreateLoadBalancer);
         }
+
         private ILoadBalancer CreateLoadBalancer(string consulServiceName)
         {
             return new LoadBalancer(consulServiceName, _serviceDiscovery, _channelFactory, _loggerFactory);

@@ -1,5 +1,7 @@
 ﻿using Grpc.Core;
+using Grpc.Extensions.Logging;
 using Grpc.Extensions.ServerSide;
+using Grpc.Extensions.ServerSide.Interceptors;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,31 +16,34 @@ namespace Grpc.Extensions.Internal
     internal class HostedGrpcServer : IHostedService
     {
         private readonly IServiceDefinitionProvider _serviceDefinitionProvider;
-        private readonly IInterceptorProvider _interceptorProvider;
+        private readonly IServerInterceptorProvider _interceptorProvider;
         private readonly GrpcServerOptions _options;
         private readonly ILogger<HostedGrpcServer> _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly IEnumerable<IGrpcServerLifetime> _lifetimes;
         private readonly IGrpcServerContextAccessor _contextAccessor;
         private Server _server;
 
         public HostedGrpcServer(
             IServiceDefinitionProvider serviceDefinitionProviders,
-            IInterceptorProvider interceptorProvider,
+            IServerInterceptorProvider interceptorProvider,
             IOptions<GrpcServerOptions> options,
             IEnumerable<IGrpcServerLifetime> lifetimes,
             IGrpcServerContextAccessor contextAccessor,
-            ILogger<HostedGrpcServer> logger)
+            ILoggerFactory loggerFactory)
         {
             _serviceDefinitionProvider = serviceDefinitionProviders;
             _interceptorProvider = interceptorProvider;
             _options = options.Value;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<HostedGrpcServer>();
+            _loggerFactory = loggerFactory;
             _lifetimes = lifetimes;
             _contextAccessor = contextAccessor;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            GrpcEnvironment.SetLogger(new LogAdapter(_loggerFactory));
             _server = BuildServer();
 
             _logger.LogInformation("Grpc server starting");

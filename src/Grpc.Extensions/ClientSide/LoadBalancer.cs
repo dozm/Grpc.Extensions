@@ -44,7 +44,7 @@ namespace Grpc.Extensions.ClientSide
             Channel channel = null;
             if (channlSet.HasChannel())
             {
-                channel = channlSet.Next().Value;
+                channel = channlSet.Next().Channel;
                 if ((DateTime.Now - _lastUpdateTime).TotalSeconds > _updateIntervalSeconds)
                 {
                     var task = TryUpdateAsync();
@@ -59,7 +59,7 @@ namespace Grpc.Extensions.ClientSide
 
                 if (channlSet.HasChannel())
                 {
-                    return channlSet.Next().Value;
+                    return channlSet.Next().Channel;
                 }
                 else
                 {
@@ -112,7 +112,7 @@ namespace Grpc.Extensions.ClientSide
             var newCount = newEndpoints.Count();
             var newChannels = new List<ChannelEntry>();
 
-            var reusable = origChannels.Where(c => newEndpoints.Contains(c.EndPoint) && c.Value.State != ChannelState.Shutdown);
+            var reusable = origChannels.Where(c => newEndpoints.Contains(c.EndPoint) && c.Channel.State != ChannelState.Shutdown);
             var toRelease = origChannels.Except(reusable);
 
             var shouldCreate = newEndpoints.Where(ep => !reusable.Any(c => c.EndPoint.Equals(ep)));

@@ -1,11 +1,9 @@
-﻿using Grpc.Core.Interceptors;
-using Grpc.Extensions.ClientSide;
-using Grpc.Extensions.Consul.ClientSide;
+﻿using Grpc.Extensions.ClientSide;
+using Grpc.Extensions.ClientSide.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sample.Client.Interceptors;
 using Sample.Grpc.Server;
-using System.Collections.Generic;
 using static Sample.Services.Service1;
 using static Sample.Services.Service2;
 
@@ -23,28 +21,23 @@ namespace Sample.Host
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHostedService<Hosted>()
-            .AddSingleton<Interceptor, AccessInterceptor>()
+            .AddSingleton<ClientInterceptor, AccessInterceptor>()
             .AddGrpcClient<Service1Client>()
             .AddGrpcClient<Service2Client>()
-            .UseGrpcClientExtensions()
-            .Configure<GrpcClientOptions>(options =>
+            .AddGrpcClientExtensions(options =>
             {
-                options.ServicesEndpoint[typeof(Service1Client)] = new List<ServiceEndPoint>()
-                {
-                    new ServiceEndPoint{ Address="192.168.4.128", Port=9001}
-                };
-                options.ServicesEndpoint[typeof(Service2Client)] = new List<ServiceEndPoint>()
-                {
-                    new ServiceEndPoint{ Address="192.168.4.128", Port=9001}
-                };
+                //options.ServiceMaps.Add<Service1Client>("192.168.4.128", 9001);
+                //options.ServiceMaps.Add<Service2Client>("192.168.4.128", 9001);
+
+                options.ServiceMaps.Add<Service1Client>("172.20.10.12", 9001);
+                options.ServiceMaps.Add<Service2Client>("172.20.10.12", 9001);
             })
 
-            .UseConsulServiceDiscovery()
-            .Configure<ConsulClientOptions>(options =>
-            {
-                options.ServiceMap[typeof(Service1Client)] = "testsvc";
-                options.ServiceMap[typeof(Service2Client)] = "testsvc";
-            })
+            //.UseConsulServiceDiscovery(options =>
+            //{
+            //    options.ServiceMaps.Add<Service1Client>("testsvc");
+            //    options.ServiceMaps.Add<Service2Client>("testsvc");
+            //})
             ;
         }
     }

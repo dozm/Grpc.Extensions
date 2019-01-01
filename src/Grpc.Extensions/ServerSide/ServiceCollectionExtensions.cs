@@ -2,6 +2,8 @@
 using Grpc.Extensions.Internal;
 using Grpc.Extensions.ServerSide;
 using Grpc.Extensions.ServerSide.HealthCheck;
+using Grpc.Extensions.ServerSide.Interceptors;
+using Grpc.Extensions.ServerSide.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
@@ -12,21 +14,27 @@ namespace Grpc.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection UseHostedGrpcServer(this IServiceCollection services)
+        public static IServiceCollection AddHostedGrpcServer(this IServiceCollection services)
         {
             services.TryAddTransient<IExecutionStrategyFactory, ExecutionStrategyFactory>();
             services.TryAddTransient<IServiceDefinitionProvider, ServiceDefinitionProvider>();
-            services.TryAddTransient<IInterceptorProvider, InterceptorProvider>();
             services.ConfigureOptions<GrpcServerOptionsConfigurator>();
             services.AddHostedService<HostedGrpcServer>();
-            services.AddSingleton<IGrpcServerContextAccessor, GrpcServerContextAccessor>();
+            services.TryAddSingleton<IGrpcServerContextAccessor, GrpcServerContextAccessor>();
+            services.TryAddSingleton<IGrpcContextAccessor, GrpcContextAccessor>();
+
+            services.TryAddSingleton<IServerInterceptorProvider, ServerInterceptorProvider>();
+            services.AddSingleton<ServerInterceptor, CreateContextInterceptor>();
+            services.AddSingleton<ServerInterceptor, ServerExceptionHandleInterceptor>();
+
+            services.TryAddSingleton<RoutingHandler>();
 
             return services;
         }
 
-        public static IServiceCollection UseHostedGrpcServer(this IServiceCollection services, Action<GrpcServerOptions> configureOptions)
+        public static IServiceCollection AddHostedGrpcServer(this IServiceCollection services, Action<GrpcServerOptions> configureOptions)
         {
-            services.UseHostedGrpcServer();
+            services.AddHostedGrpcServer();
             services.Configure(configureOptions);
 
             return services;
@@ -35,8 +43,13 @@ namespace Grpc.Extensions
         public static IServiceCollection AddGrpcService<TService>(this IServiceCollection services)
             where TService : class
         {
-            services.AddTransient<TService>();
-            services.AddTransient<IServiceDefinitionFactory, ServiceDefinitionFactory<TService>>();
+            services.AddScoped<TService>();
+            //services.AddTransient<IServiceDefinitionFactory, ServiceDefinitionFactory<TService>>();
+            services.AddTransient<IServiceDefinitionFactory, ServiceDefinitionFactoryWithRouting<TService>>();
+            services.Configure<GrpcServerOptions>(options =>
+            {
+                options.ServiceMetadatas.Add(new ServiceMetadata(typeof(TService)));
+            });
 
             return services;
         }

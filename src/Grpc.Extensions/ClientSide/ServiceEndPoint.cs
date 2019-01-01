@@ -2,7 +2,7 @@
 {
     public class ServiceEndPoint
     {
-        public string Address { get; set; }
+        public string Host { get; set; }
 
         public int Port { get; set; }
 
@@ -10,11 +10,11 @@
         {
             if (Port > 0)
             {
-                return $"{Address}:{Port}";
+                return $"{Host}:{Port}";
             }
             else
             {
-                return Address;
+                return Host;
             }
         }
 
@@ -29,12 +29,12 @@
 
         public bool Equals(ServiceEndPoint other)
         {
-            return Port == other.Port && Address == other.Address;
+            return Port == other.Port && Host == other.Host;
         }
 
         public override int GetHashCode()
         {
-            var hash = Address.GetHashCode();
+            var hash = Host.GetHashCode();
             if (Port != 0)
                 hash ^= Port.GetHashCode();
 

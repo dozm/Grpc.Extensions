@@ -43,8 +43,8 @@ namespace Grpc.Extensions.Consul.Test
 
             return new ServiceEndPoint[]
             {
-                new ServiceEndPoint(){ Address="127.0.0.1" , Port=80},
-                new ServiceEndPoint(){ Address="172.20.10.12" , Port=80}
+                new ServiceEndPoint(){ Host="127.0.0.1" , Port=80},
+                new ServiceEndPoint(){ Host="172.20.10.12" , Port=80}
             };
         }
     }

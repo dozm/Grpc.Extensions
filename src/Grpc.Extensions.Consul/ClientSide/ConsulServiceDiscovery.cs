@@ -34,7 +34,7 @@ namespace Grpc.Extensions.Consul.ClientSide
                 var serviceQuery = await consul.Health.Service(serviceName);
                 var endpoints = serviceQuery.Response.Select(se => se.Service).Select(service =>
                 {
-                    return new ServiceEndPoint { Address = service.Address, Port = service.Port };
+                    return new ServiceEndPoint { Host = service.Address, Port = service.Port };
                 });
 
                 if (endpoints == null || endpoints.Count() == 0)

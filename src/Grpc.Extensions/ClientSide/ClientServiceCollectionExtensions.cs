@@ -1,24 +1,35 @@
 ﻿using Grpc.Core;
+using Grpc.Extensions.ClientSide.Interceptors;
 using Grpc.Extensions.ExecutionStrategies;
-using Grpc.Extensions.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 
 namespace Grpc.Extensions.ClientSide
 {
     public static class ClientServiceCollectionExtensions
     {
-        public static IServiceCollection UseGrpcClientExtensions(this IServiceCollection services)
+        public static IServiceCollection AddGrpcClientExtensions(this IServiceCollection services)
         {
             services.TryAddTransient<IExecutionStrategyFactory, ExecutionStrategyFactory>();
             services.TryAddSingleton<StatelessCallInvoker>();
-            services.TryAddSingleton<CallInvoker, CallInvokerWrapper>();
-            services.TryAddSingleton<IInterceptorProvider, InterceptorProvider>();
+            services.TryAddSingleton<CallInvoker, InterceptingCallInvoker>();
             services.TryAddSingleton<IChannelProvider, ChannelProvider>();
             services.TryAddSingleton<IChannelFactory, ChannelFactory>();
             services.TryAddSingleton<IServiceDiscovery, DefaultServiceDiscovery>();
             services.TryAddSingleton<ILoadBalancerProvider, LoadBalancerProvider>();
             services.ConfigureOptions<GrpcClientOptionsConfigurator>();
+
+            services.TryAddSingleton<IClientInterceptorProvider, ClientInterceptorProvider>();
+            services.AddSingleton<ClientInterceptor, ClientExceptionHandleInterceptor>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddGrpcClientExtensions(this IServiceCollection services, Action<GrpcClientOptions> action)
+        {
+            services.AddGrpcClientExtensions();
+            services.Configure(action);
 
             return services;
         }

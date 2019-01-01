@@ -39,19 +39,33 @@ namespace Sample.Grpc.Server
         {
             _logger.LogInformation("Starting");
 
-            _logger.LogInformation($"Started");
+            var task = Run();
 
-            do
-            {
-                _logger.LogWarning(_service1Client.API1(new Request1() { Message = "Hi, Server1." }).Message);
-                _logger.LogWarning(_service2Client.API2(new Request1 { Message = "Hi,Servie2." }).Message);
-                _logger.LogWarning(_service1Client.API1Async(new Request1() { Message = "Hi, Server." }).GetAwaiter().GetResult().Message);
-            } while (Console.ReadLine() == "");
+            _logger.LogInformation($"Started");
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stopped");
+        }
+
+        private async Task Run()
+        {
+            do
+            {
+                try
+                {
+                    var resp = await _service1Client.API1Async(new Request1() { Message = "111111111111  Hi, Server1." });
+                    _logger.LogWarning(resp.Message);
+                    //_logger.LogWarning(_service2Client.API2(new Request1 { Message = "222222222222 Hi,Servie2." }).Message);
+                    //_logger.LogWarning(_service1Client.API1Async(new Request1() { Message = "33333333333333 Hi, Server." }).GetAwaiter().GetResult().Message);
+                }
+                catch
+                {
+                }
+
+                _logger.LogInformation("================================================");
+            } while (Console.ReadLine() == "");
         }
     }
 }

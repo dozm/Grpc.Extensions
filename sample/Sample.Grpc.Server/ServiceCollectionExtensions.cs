@@ -1,7 +1,7 @@
-﻿using Grpc.Core.Interceptors;
-using Grpc.Extensions;
-using Grpc.Extensions.Consul.ServerSide;
+﻿using Grpc.Extensions;
+using Grpc.Extensions.ServerSide.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
+using Sample.Grpc.Server.Handlers;
 using Sample.Grpc.Server.Interceptors;
 using Sample.Grpc.Server.Services;
 
@@ -14,14 +14,16 @@ namespace Sample.Grpc.Server
             services
                 .AddGrpcService<Service1Impl>()
                 .AddGrpcService<Service2Impl>()
-                .AddSingleton<Interceptor, AccessInterceptor>()
-                //.AddHostedService<Hosted>()
-                .UseHostedGrpcServer(options =>
+                .AddScoped<Handler1>()
+                .AddScoped<Handler2>()
+                .AddScoped<A>()
+                .AddSingleton<ServerInterceptor, AccessInterceptor>()
+                .AddHostedGrpcServer(options =>
                 {
                 })
-                .UseConsulServiceRegister()
-                .UseTcpCheck()
-
+                //.UseConsulServiceRegister()
+                //.UseTcpCheck()
+                //.AddSingleton<IServiceDefinitionProvider, MyServiceDefinitionProvider>()
                 ;
 
             return services;

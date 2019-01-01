@@ -1,78 +1,72 @@
 ﻿using Grpc.Core;
-using Grpc.Extensions.ServerSide.Interceptors;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
-namespace Sample.Grpc.Server.Interceptors
+namespace Grpc.Extensions.ServerSide.Interceptors
 {
-    public class AccessInterceptor : ServerInterceptor
+    public class CreateContextInterceptor : ServerInterceptor
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IGrpcContextAccessor _grpcContextAccessor;
+
         private readonly ILogger _logger;
 
-        public override int Order => -101;
+        public override int Order { get; set; } = -90;
 
-        public AccessInterceptor(ILogger<AccessInterceptor> logger)
+        public CreateContextInterceptor(IServiceScopeFactory serviceScopeFactory, IGrpcContextAccessor grpcContextAccessor, ILogger<CreateContextInterceptor> logger)
         {
+            _serviceScopeFactory = serviceScopeFactory;
+            _grpcContextAccessor = grpcContextAccessor;
             _logger = logger;
         }
 
-        #region 服务器端拦截方法
-
         public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
         {
-            _logger.LogInformation($"===================================\nServer handling call {context.Host} {context.Method}");
-
-            try
+            using (var disposer = CreateContext(context))
             {
                 return await continuation(request, context);
-            }
-            finally
-            {
-                _logger.LogInformation($"Server handled call {context.Host} {context.Method}");
             }
         }
 
         public override async Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, ServerCallContext context, ClientStreamingServerMethod<TRequest, TResponse> continuation)
         {
-            _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
-
-            try
+            using (var disposer = CreateContext(context))
             {
                 return await continuation(requestStream, context);
-            }
-            finally
-            {
-                _logger.LogInformation($"Server handled call {context.Host} {context.Method}");
             }
         }
 
         public override async Task DuplexStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context, DuplexStreamingServerMethod<TRequest, TResponse> continuation)
         {
-            _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
-
-            try
+            using (var disposer = CreateContext(context))
             {
                 await continuation(requestStream, responseStream, context);
-            }
-            finally
-            {
-                _logger.LogInformation($"Server handled call {context.Host}  {context.Method}");
             }
         }
 
         public override async Task ServerStreamingServerHandler<TRequest, TResponse>(TRequest request, IServerStreamWriter<TResponse> responseStream, ServerCallContext context, ServerStreamingServerMethod<TRequest, TResponse> continuation)
         {
-            _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
-            try
+            using (var disposer = CreateContext(context))
             {
                 await continuation(request, responseStream, context);
             }
-            finally
-            {
-                _logger.LogInformation($"Server handled call {context.Host}  {context.Method}");
-            }
         }
 
-        #endregion 服务器端拦截方法
+        private IDisposable CreateContext(ServerCallContext context)
+        {
+            _grpcContextAccessor.GrpcContext = new GrpcContext
+            {
+                ServerCallContext = context,
+                ServiceScope = _serviceScopeFactory.CreateScope()
+            };
+
+            return Disposable.Create(() =>
+            {
+                _grpcContextAccessor.GrpcContext?.ServiceScope.Dispose();
+                _grpcContextAccessor.GrpcContext = null;
+            });
+        }
     }
 }

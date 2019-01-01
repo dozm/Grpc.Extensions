@@ -11,10 +11,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientSide\Options\" />
+    <Folder Include="Internal\" />
   </ItemGroup>
 
 </Project>

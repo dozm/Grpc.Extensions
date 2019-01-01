@@ -8,11 +8,11 @@ namespace Grpc.Extensions.ClientSide
         private bool _disposed;
 
         public ServiceEndPoint EndPoint { get; }
-        public Channel Value { get; }
+        public Channel Channel { get; }
 
         public ChannelEntry(Channel channel, ServiceEndPoint endPoint)
         {
-            Value = channel;
+            Channel = channel;
             EndPoint = endPoint;
         }
 
@@ -24,9 +24,9 @@ namespace Grpc.Extensions.ClientSide
 
         protected void Dispose(bool disposing)
         {
-            if (!_disposed && Value?.State != ChannelState.Shutdown)
+            if (!_disposed && Channel?.State != ChannelState.Shutdown)
             {
-                Value.ShutdownAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                Channel.ShutdownAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 _disposed = true;
             }
         }
