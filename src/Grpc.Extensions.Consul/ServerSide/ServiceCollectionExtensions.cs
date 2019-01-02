@@ -17,6 +17,7 @@ namespace Grpc.Extensions.Consul.ServerSide
 
             return services;
         }
+
         public static IServiceCollection UseConsulServiceRegister(this IServiceCollection services, Action<ConsulOptions> action)
         {
             services.UseConsulServiceRegister()

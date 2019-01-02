@@ -27,7 +27,7 @@ namespace Grpc.Extensions
             services.AddSingleton<ServerInterceptor, CreateContextInterceptor>();
             services.AddSingleton<ServerInterceptor, ServerExceptionHandleInterceptor>();
 
-            services.TryAddSingleton<RoutingHandler>();
+            services.TryAddSingleton<Router>();
 
             return services;
         }

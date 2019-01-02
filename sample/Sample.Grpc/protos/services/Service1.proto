@@ -8,4 +8,10 @@ service Service1{
     rpc API1(Request1) returns (Response1){}
 
 	rpc API2(Request1) returns (Response1){}
+
+	rpc ClientStreamAPI(stream Request1) returns (Response1) {}
+
+	rpc ServerStreamAPI(stream Request1) returns (Response1) {}
+	
+	rpc DuplexStreamingAPI(stream Request1) returns (stream Response1){}
 }

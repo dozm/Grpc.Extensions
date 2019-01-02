@@ -35,6 +35,7 @@ namespace Sample.Grpc.Server.Interceptors
 
         public override async Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, ServerCallContext context, ClientStreamingServerMethod<TRequest, TResponse> continuation)
         {
+            _logger.LogInformation($"=================================================");
             _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
 
             try
@@ -49,6 +50,7 @@ namespace Sample.Grpc.Server.Interceptors
 
         public override async Task DuplexStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context, DuplexStreamingServerMethod<TRequest, TResponse> continuation)
         {
+            _logger.LogInformation($"=================================================");
             _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
 
             try
@@ -63,6 +65,7 @@ namespace Sample.Grpc.Server.Interceptors
 
         public override async Task ServerStreamingServerHandler<TRequest, TResponse>(TRequest request, IServerStreamWriter<TResponse> responseStream, ServerCallContext context, ServerStreamingServerMethod<TRequest, TResponse> continuation)
         {
+            _logger.LogInformation($"=================================================");
             _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
             try
             {

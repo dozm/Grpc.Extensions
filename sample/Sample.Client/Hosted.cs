@@ -1,4 +1,5 @@
-﻿using Grpc.Core.Interceptors;
+﻿using Grpc.Core;
+using Grpc.Core.Interceptors;
 using Grpc.Extensions.Consul.ClientSide;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Sample.Messages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Sample.Services.Service1;
@@ -39,7 +41,7 @@ namespace Sample.Grpc.Server
         {
             _logger.LogInformation("Starting");
 
-            var task = Run();
+            var task = Task.Run(() => Run());
 
             _logger.LogInformation($"Started");
         }
@@ -49,27 +51,70 @@ namespace Sample.Grpc.Server
             _logger.LogInformation("Stopped");
         }
 
-        private async Task Run()
+        private async Task Run(CancellationToken token = default)
         {
+            await Task.Delay(100);
             do
             {
                 _logger.LogInformation("==============================================");
                 try
                 {
-                    LogResponse(await _service1Client.API1Async(new Request1() { Message = "Hi, Server1." }));
+                    LogResponse(await _service1Client.API1Async(new Request1() { Message = "Hi, Server1." },
+                         options: new CallOptions(cancellationToken: token)));
 
-                    //LogResponse(_service2Client.API2(new Request1 { Message = "Hi,Servie2." }));
+
+                    //await ClientStreamRequest();
+
+                    //await DuplexStreamingRequest();
                 }
-                catch
+                catch(Exception ex)
                 {
+                    _logger.LogError(ex, "");
                 }
-               
+
             } while (Console.ReadLine() == "");
         }
 
         private void LogResponse(Response1 response)
         {
             _logger.LogInformation(response.Message);
+        }
+
+        private async Task ClientStreamRequest()
+        {
+            using (var call = _service1Client.ClientStreamAPI())
+            {
+                foreach (var character in "Hello world.")
+                {
+                    await call.RequestStream.WriteAsync(new Request1 { Message = character.ToString() });
+                }
+                await call.RequestStream.CompleteAsync();
+              
+                var response = await call.ResponseAsync;
+                _logger.LogInformation($"响应：{response.Message}");
+            }
+        }
+
+        private async Task DuplexStreamingRequest()
+        {
+            using (var call = _service1Client.DuplexStreamingAPI())
+            {
+                var responseReaderTask = Task.Run(async () =>
+                {
+                    while (await call.ResponseStream.MoveNext())
+                    {
+                        var msg = call.ResponseStream.Current.Message;
+                        _logger.LogInformation($"收到响应： {msg}");
+                    }
+                });
+
+                foreach (var question in new string[] { "Who are you ?", "Where are you from ?", "Where are you going ?" })
+                {
+                    await call.RequestStream.WriteAsync(new Request1 { Message = question });
+                }
+                await call.RequestStream.CompleteAsync();
+                await responseReaderTask;
+            }
         }
     }
 }

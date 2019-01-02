@@ -15,14 +15,14 @@ namespace Sample.Services {
     static readonly grpc::Marshaller<global::Sample.Messages.Request1> __Marshaller_Sample_GrpcService_Request1 = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Sample.Messages.Request1.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Sample.Messages.Response1> __Marshaller_Sample_GrpcService_Response1 = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Sample.Messages.Response1.Parser.ParseFrom);
 
-   public  static readonly grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1> __Method_API1 = new grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1>(
+    static readonly grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1> __Method_API1 = new grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1>(
         grpc::MethodType.Unary,
         __ServiceName,
         "API1",
         __Marshaller_Sample_GrpcService_Request1,
         __Marshaller_Sample_GrpcService_Response1);
 
-   public  static readonly grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1> __Method_API2 = new grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1>(
+    static readonly grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1> __Method_API2 = new grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1>(
         grpc::MethodType.Unary,
         __ServiceName,
         "API2",
