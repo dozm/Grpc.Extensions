@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Sample.Messages;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using static Sample.Services.Service1;
@@ -23,7 +24,6 @@ namespace Sample.Grpc.Server.Services
 
             try
             {
-
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -52,18 +52,28 @@ namespace Sample.Grpc.Server.Services
                 _logger.LogInformation($"接收客户端流 NO.{count}: {playload}");
             }
             _logger.LogInformation($"{sb},读取次数：{count}");
-            return new Response1 { Message = $"服务器以读: {sb}" };
+            return new Response1 { Message = $"已读客户端流: {sb}" };
         }
 
-        public override async Task<Response1> ServerStreamAPI(IAsyncStreamReader<Request1> requestStream, ServerCallContext context)
+        public override async Task ServerStreamAPI(Request1 request, IServerStreamWriter<Response1> responseStream, ServerCallContext context)
         {
-            return await base.ServerStreamAPI(requestStream, context);
+            _logger.LogInformation($"{request.Message}");
+            foreach (var response in "我 秦始皇 打钱".Split(' '))
+            {
+                await responseStream.WriteAsync(new Response1 { Message = response });
+            }
         }
 
         public override async Task DuplexStreamingAPI(IAsyncStreamReader<Request1> requestStream, IServerStreamWriter<Response1> responseStream, ServerCallContext context)
         {
-            await base.DuplexStreamingAPI(requestStream, responseStream, context);
+            var replies = new string[] { "⊙_⊙", "0.0", "- -!" };
+            var count = 0;
+            while (await requestStream.MoveNext())
+            {
+                var request = requestStream.Current;
+                _logger.LogInformation($"{request.Message}");
+                await responseStream.WriteAsync(new Response1 { Message = $"{request.Message} {replies[count++ % replies.Length]}" });
+            }
         }
-
     }
 }

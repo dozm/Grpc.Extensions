@@ -28,6 +28,7 @@ namespace Grpc.Extensions
             services.AddSingleton<ServerInterceptor, ServerExceptionHandleInterceptor>();
 
             services.TryAddSingleton<Router>();
+            services.TryAddSingleton<IRoutingTable, RoutingTable>();
 
             return services;
         }

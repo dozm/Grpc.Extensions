@@ -1,8 +1,5 @@
 ﻿using Google.Protobuf.Reflection;
 using Grpc.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Grpc.Extensions
 {
@@ -18,7 +15,6 @@ namespace Grpc.Extensions
                 return MethodType.ClientStreaming;
             else
                 return MethodType.ServerStreaming;
-
         }
     }
 }

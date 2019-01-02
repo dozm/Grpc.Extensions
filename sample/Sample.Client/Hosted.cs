@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Sample.Messages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Sample.Services.Service1;
@@ -53,26 +52,40 @@ namespace Sample.Grpc.Server
 
         private async Task Run(CancellationToken token = default)
         {
-            await Task.Delay(100);
+            await Task.Delay(500);
+            var callType = 1;
             do
             {
                 _logger.LogInformation("==============================================");
+
                 try
                 {
-                    LogResponse(await _service1Client.API1Async(new Request1() { Message = "Hi, Server1." },
-                         options: new CallOptions(cancellationToken: token)));
+                    switch (callType)
+                    {
+                        case 2:
+                            await ClientStreamRequest();
+                            break;
 
+                        case 3:
+                            await ServerStreamRequest();
+                            break;
 
-                    //await ClientStreamRequest();
+                        case 4:
+                            await DuplexStreamingRequest();
+                            break;
 
-                    //await DuplexStreamingRequest();
+                        default:
+                            LogResponse(await _service1Client.API1Async(new Request1() { Message = "Hi, Server1." }, options: new CallOptions(cancellationToken: token)));
+                            break;
+                    }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, "");
                 }
-
-            } while (Console.ReadLine() == "");
+                var input = Console.ReadLine();
+                int.TryParse(input, out callType);
+            } while (true);
         }
 
         private void LogResponse(Response1 response)
@@ -89,9 +102,21 @@ namespace Sample.Grpc.Server
                     await call.RequestStream.WriteAsync(new Request1 { Message = character.ToString() });
                 }
                 await call.RequestStream.CompleteAsync();
-              
+
                 var response = await call.ResponseAsync;
                 _logger.LogInformation($"响应：{response.Message}");
+            }
+        }
+
+        private async Task ServerStreamRequest()
+        {
+            using (var call = _service1Client.ServerStreamAPI(new Request1 { Message = "你谁" }))
+            {
+                while (await call.ResponseStream.MoveNext())
+                {
+                    var response = call.ResponseStream.Current;
+                    _logger.LogInformation(response.Message);
+                }
             }
         }
 

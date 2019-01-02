@@ -11,7 +11,7 @@ service Service1{
 
 	rpc ClientStreamAPI(stream Request1) returns (Response1) {}
 
-	rpc ServerStreamAPI(stream Request1) returns (Response1) {}
+	rpc ServerStreamAPI(Request1) returns (stream Response1) {}
 	
 	rpc DuplexStreamingAPI(stream Request1) returns (stream Response1){}
 }

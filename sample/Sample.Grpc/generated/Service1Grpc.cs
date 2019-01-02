@@ -37,7 +37,7 @@ namespace Sample.Services {
         __Marshaller_Sample_GrpcService_Response1);
 
     static readonly grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1> __Method_ServerStreamAPI = new grpc::Method<global::Sample.Messages.Request1, global::Sample.Messages.Response1>(
-        grpc::MethodType.ClientStreaming,
+        grpc::MethodType.ServerStreaming,
         __ServiceName,
         "ServerStreamAPI",
         __Marshaller_Sample_GrpcService_Request1,
@@ -74,7 +74,7 @@ namespace Sample.Services {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
-      public virtual global::System.Threading.Tasks.Task<global::Sample.Messages.Response1> ServerStreamAPI(grpc::IAsyncStreamReader<global::Sample.Messages.Request1> requestStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task ServerStreamAPI(global::Sample.Messages.Request1 request, grpc::IServerStreamWriter<global::Sample.Messages.Response1> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -149,13 +149,13 @@ namespace Sample.Services {
       {
         return CallInvoker.AsyncClientStreamingCall(__Method_ClientStreamAPI, null, options);
       }
-      public virtual grpc::AsyncClientStreamingCall<global::Sample.Messages.Request1, global::Sample.Messages.Response1> ServerStreamAPI(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncServerStreamingCall<global::Sample.Messages.Response1> ServerStreamAPI(global::Sample.Messages.Request1 request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return ServerStreamAPI(new grpc::CallOptions(headers, deadline, cancellationToken));
+        return ServerStreamAPI(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
-      public virtual grpc::AsyncClientStreamingCall<global::Sample.Messages.Request1, global::Sample.Messages.Response1> ServerStreamAPI(grpc::CallOptions options)
+      public virtual grpc::AsyncServerStreamingCall<global::Sample.Messages.Response1> ServerStreamAPI(global::Sample.Messages.Request1 request, grpc::CallOptions options)
       {
-        return CallInvoker.AsyncClientStreamingCall(__Method_ServerStreamAPI, null, options);
+        return CallInvoker.AsyncServerStreamingCall(__Method_ServerStreamAPI, null, options, request);
       }
       public virtual grpc::AsyncDuplexStreamingCall<global::Sample.Messages.Request1, global::Sample.Messages.Response1> DuplexStreamingAPI(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
@@ -182,6 +182,19 @@ namespace Sample.Services {
           .AddMethod(__Method_ClientStreamAPI, serviceImpl.ClientStreamAPI)
           .AddMethod(__Method_ServerStreamAPI, serviceImpl.ServerStreamAPI)
           .AddMethod(__Method_DuplexStreamingAPI, serviceImpl.DuplexStreamingAPI).Build();
+    }
+
+    /// <summary>Register service method implementations with a service binder. Useful when customizing the service binding logic.
+    /// Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+    /// <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+    /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+    public static void BindService(grpc::ServiceBinderBase serviceBinder, Service1Base serviceImpl)
+    {
+      serviceBinder.AddMethod(__Method_API1, serviceImpl.API1);
+      serviceBinder.AddMethod(__Method_API2, serviceImpl.API2);
+      serviceBinder.AddMethod(__Method_ClientStreamAPI, serviceImpl.ClientStreamAPI);
+      serviceBinder.AddMethod(__Method_ServerStreamAPI, serviceImpl.ServerStreamAPI);
+      serviceBinder.AddMethod(__Method_DuplexStreamingAPI, serviceImpl.DuplexStreamingAPI);
     }
 
   }

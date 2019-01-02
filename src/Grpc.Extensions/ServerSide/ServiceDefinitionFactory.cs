@@ -1,6 +1,5 @@
 ﻿using Grpc.Core;
 using System;
-using System.Reflection;
 
 namespace Grpc.Extensions
 {
@@ -20,7 +19,10 @@ namespace Grpc.Extensions
 
             if (serviceBaseType != null && serviceBaseType.IsNested)
             {
-                var bindServiceMethod = serviceBaseType.DeclaringType?.GetMethod("BindService", BindingFlags.Public | BindingFlags.Static);
+                var bindServiceMethod = serviceBaseType.DeclaringType?.GetMethod("BindService", new Type[] { serviceBaseType });
+
+                //bindServiceMethod = serviceBaseType.DeclaringType.GetMethods().First(m => m.Name == "BindService" && m.GetParameters().Length == 2);
+
                 if (bindServiceMethod != null)
                 {
                     return (ServerServiceDefinition)bindServiceMethod.Invoke(null, new object[] { _service });

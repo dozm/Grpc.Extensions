@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Sample.Grpc.Server.Interceptors
 {
-    public class AccessInterceptor : ServerInterceptor
+    public class ServerAccessInterceptor : ServerInterceptor
     {
         private readonly ILogger _logger;
 
         public override int Order => -101;
 
-        public AccessInterceptor(ILogger<AccessInterceptor> logger)
+        public ServerAccessInterceptor(ILogger<ServerAccessInterceptor> logger)
         {
             _logger = logger;
         }
@@ -21,7 +21,7 @@ namespace Sample.Grpc.Server.Interceptors
         public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
         {
             _logger.LogInformation($"=================================================");
-            _logger.LogInformation($"Server handling call {context.Host} {context.Method}");
+            _logger.LogInformation($"Server handling call {context.Method} {context.Host}");
 
             try
             {
@@ -29,14 +29,14 @@ namespace Sample.Grpc.Server.Interceptors
             }
             finally
             {
-                _logger.LogInformation($"Server handled call {context.Host} {context.Method}");
+                _logger.LogInformation($"Server handled call {context.Method} {context.Host}");
             }
         }
 
         public override async Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, ServerCallContext context, ClientStreamingServerMethod<TRequest, TResponse> continuation)
         {
             _logger.LogInformation($"=================================================");
-            _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
+            _logger.LogInformation($"Server handling call {context.Method} {context.Host}");
 
             try
             {
@@ -44,14 +44,14 @@ namespace Sample.Grpc.Server.Interceptors
             }
             finally
             {
-                _logger.LogInformation($"Server handled call {context.Host} {context.Method}");
+                _logger.LogInformation($"Server handled call {context.Method} {context.Host}");
             }
         }
 
         public override async Task DuplexStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context, DuplexStreamingServerMethod<TRequest, TResponse> continuation)
         {
             _logger.LogInformation($"=================================================");
-            _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
+            _logger.LogInformation($"Server handling call {context.Method} {context.Host}");
 
             try
             {
@@ -59,21 +59,21 @@ namespace Sample.Grpc.Server.Interceptors
             }
             finally
             {
-                _logger.LogInformation($"Server handled call {context.Host}  {context.Method}");
+                _logger.LogInformation($"Server handled call {context.Method} {context.Host}");
             }
         }
 
         public override async Task ServerStreamingServerHandler<TRequest, TResponse>(TRequest request, IServerStreamWriter<TResponse> responseStream, ServerCallContext context, ServerStreamingServerMethod<TRequest, TResponse> continuation)
         {
             _logger.LogInformation($"=================================================");
-            _logger.LogInformation($"Server handling call {context.Host}  {context.Method}");
+            _logger.LogInformation($"Server handling call {context.Method} {context.Host}");
             try
             {
                 await continuation(request, responseStream, context);
             }
             finally
             {
-                _logger.LogInformation($"Server handled call {context.Host}  {context.Method}");
+                _logger.LogInformation($"Server handled call {context.Method} {context.Host}");
             }
         }
 

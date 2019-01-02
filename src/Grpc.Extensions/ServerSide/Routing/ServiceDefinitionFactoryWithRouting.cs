@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.Reflection;
 using Grpc.Core;
+using Microsoft.Extensions.Internal;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,16 +10,19 @@ namespace Grpc.Extensions.ServerSide.Routing
     public class ServiceDefinitionFactoryWithRouting<TService> : IServiceDefinitionFactory
     {
         private readonly Router _router;
+        private readonly IRoutingTable _routingTable;
 
-        public ServiceDefinitionFactoryWithRouting(Router router)
+        public ServiceDefinitionFactoryWithRouting(Router router, IRoutingTable routingTable)
         {
             _router = router;
+            _routingTable = routingTable;
         }
 
         public ServerServiceDefinition Create()
         {
             var builder = ServerServiceDefinition.CreateBuilder();
-            var declaringType = typeof(TService).BaseType.DeclaringType;
+            var serviceType = typeof(TService);
+            var declaringType = serviceType.BaseType.DeclaringType;
 
             var serviceDescriptor = (ServiceDescriptor)declaringType.GetProperty("Descriptor", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 
@@ -45,6 +49,10 @@ namespace Grpc.Extensions.ServerSide.Routing
                 ReflectionData.ServiceDefinitionAddMethods[methodType]
                     .MakeGenericMethod(methodDescriptor.InputType.ClrType, methodDescriptor.OutputType.ClrType)
                     .Invoke(builder, new object[] { method, handler });
+
+                // 注册执行器，用于执行实际的 grpc 服务方法。
+                _routingTable.Register($"/{serviceDescriptor.FullName}/{methodDescriptor.Name}",
+                    ObjectMethodExecutor.Create(serviceType.GetMethod(methodDescriptor.Name), serviceType.GetTypeInfo()));
             }
 
             return builder.Build();

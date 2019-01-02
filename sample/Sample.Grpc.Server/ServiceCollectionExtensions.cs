@@ -1,5 +1,4 @@
 ﻿using Grpc.Extensions;
-using Grpc.Extensions.Consul.ServerSide;
 using Grpc.Extensions.ServerSide.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 using Sample.Grpc.Server.Interceptors;
@@ -14,23 +13,23 @@ namespace Sample.Grpc.Server
             services
                 .AddGrpcService<Service1Impl>()
                 .AddGrpcService<Service2Impl>()
-                .AddSingleton<ServerInterceptor, AccessInterceptor>()
+                .AddSingleton<ServerInterceptor, ServerAccessInterceptor>()
                 .AddHostedGrpcServer(options =>
                 {
                     options.AddPort("172.20.10.12", 9001);
-                    options.AddPort("[fe80::995f:ece5:2370:f4]", 9003);
+                    // IPv6 作为gprc server 监听端口时需要加中括号，注册到 consul 不能有中括号，否则无法 check.
+                    // options.AddPort("[fe80::995f:ece5:2370:f4]", 9003);
                     //options.AddPort("192.168.4.128", 9001);
-
                 })
 
-                .UseConsulServiceRegister(options =>
-                {
-                    options.Address = "http://172.20.10.3:8500";
-                    //options.Address = "http://192.168.8.6:8500";
+                //.UseConsulServiceRegister(options =>
+                //{
+                //    //options.Address = "http://172.20.10.3:8500";
+                //    options.Address = "http://192.168.8.6:8500";
 
-                    options.ServiceRegistration.ConsulServiceName = "testsvc";
-                })
-                .UseTcpCheck()
+                //    options.ServiceRegistration.ConsulServiceName = "testsvc";
+                //})
+                //.UseTcpCheck()
                 //.UseTtlCheck()
                 //.UseGrpcCheck()
                 //.UseHealthService()

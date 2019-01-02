@@ -65,7 +65,11 @@ namespace Grpc.Extensions.ClientSide
                 where TRequest : class
                 where TResponse : class
         {
-            return new CallInvocationDetails<TRequest, TResponse>(_channelProvider.GetChannel(method.ServiceName), method, host, options);
+            var channel = _channelProvider.GetChannel(method.ServiceName);
+            if (host == null)
+                host = channel.ResolvedTarget ?? channel.Target;
+
+            return new CallInvocationDetails<TRequest, TResponse>(channel, method, host, options);
         }
     }
 }
